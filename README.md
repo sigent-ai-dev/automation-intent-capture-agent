@@ -70,11 +70,55 @@ Intent Capture Agent automates this — it conducts propose-and-steer elicitatio
 4. **Structured output, unstructured input** — regardless of how messy the input, the output is always a valid 7-section intent document that passes `intent check`.
 5. **Developer handoff** — capture completes, developer gets notified, continues with `/intent.steer`.
 
+## Initiation — Three Entry Points
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Entry Points                              │
+├───────────────────┬───────────────────┬─────────────────────────┤
+│  Stakeholder      │  Developer (CLI)  │  Developer (AI tool)    │
+│                   │                   │                         │
+│  Receives link    │  intent capture   │  /intent-capture-agent  │
+│  (browser/Teams/  │    --start        │                         │
+│  Zoom/Slack)      │    --status       │  (starts or connects    │
+│                   │    --connect      │   to session)           │
+│  No tools needed  │                   │                         │
+└────────┬──────────┴─────────┬─────────┴────────────┬────────────┘
+         │                    │                      │
+         └────────────────────┴──────────────────────┘
+                              │
+                     ┌────────▼────────┐
+                     │  Capture Agent  │
+                     │  Service API    │
+                     │  (Fargate)      │
+                     └─────────────────┘
+```
+
+| Entry Point | Who Uses It | What Happens |
+|-------------|-------------|--------------|
+| **Link/Invite** | Stakeholders | Open browser, join Teams/Zoom call, or respond in Slack. No install needed. |
+| **CLI** (`intent capture`) | Developer | Creates session, gets shareable link, monitors progress, pulls result into `.intent/` |
+| **Skill** (`/intent-capture-agent`) | Developer (in AI tool) | Same as CLI but in-editor. Streams progress, writes `.intent/` when done. |
+
+### Session API
+
+The service exposes a REST API that both the CLI and skill call:
+
+```
+POST   /sessions              — Create new capture session (returns session_id + join_url)
+GET    /sessions/:id          — Get session status (active/complete/failed)
+GET    /sessions/:id/result   — Get captured intent.md content (when complete)
+DELETE /sessions/:id          — Cancel a session
+```
+
+The join URL is what gets shared with stakeholders — it routes to the appropriate channel (browser voice UI, Slack thread, meeting bot invite).
+
 ## Architecture
 
 - **Runtime**: ECS Fargate (long-lived WebSocket connections for voice/meetings)
 - **Voice Engine**: Amazon Nova Sonic 2 via Strands Agents SDK (`BidiAgent`)
 - **Agent Framework**: Strands Agents (Python) with custom elicitation tools
+- **Session API**: FastAPI REST endpoints for session lifecycle
 - **Chat**: Slack Bot SDK / Teams Bot Framework
 - **Document Ingestion**: Bedrock (Claude) for extraction + summarisation
 - **State**: DynamoDB for session persistence
