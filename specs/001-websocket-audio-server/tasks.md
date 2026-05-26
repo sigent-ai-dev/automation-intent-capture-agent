@@ -33,9 +33,9 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 [P] Implement SessionState enum and AudioCodec value object in src/voice_server/models/codec.py
+- [ ] T005 [P] Implement AudioCodec value object in src/voice_server/models/codec.py and SessionState enum in src/voice_server/models/session.py
 - [ ] T006 [P] Implement Session dataclass with lifecycle state in src/voice_server/models/session.py
-- [ ] T007 Implement SessionRegistry (Dict-based CRUD, lookup by id/user_id) in src/voice_server/sessions/registry.py
+- [ ] T007 Implement SessionRegistry (Dict-based CRUD, lookup by id/user_id, enforce single active session per user_id — close existing session if new connection from same user) in src/voice_server/sessions/registry.py
 - [ ] T008 [P] Implement control message protocol (parse/serialize JSON text frames) in src/voice_server/ws/protocol.py
 - [ ] T009 [P] Implement ALB auth header extraction (x-amzn-oidc-identity, LOCAL_MODE bypass) in src/voice_server/ws/auth.py
 - [ ] T010 Create FastAPI app skeleton with lifespan handler in src/voice_server/main.py
@@ -60,7 +60,7 @@
 ### Implementation for User Story 1
 
 - [ ] T015 [US1] Implement WebSocket endpoint handler at /ws/audio in src/voice_server/ws/handler.py — accept connection, route text/binary frames
-- [ ] T016 [US1] Implement codec negotiation logic in handler — validate codec_negotiate message, respond with codec_ack or codec_reject, transition session to STREAMING
+- [ ] T016 [US1] Implement codec negotiation logic in handler — validate codec_negotiate message, respond with codec_ack or codec_reject, transition session to STREAMING. Enforce 5-second negotiation timeout (close with CODEC_TIMEOUT error if no codec_negotiate received after upgrade)
 - [ ] T017 [US1] Implement binary frame forwarding — receive client audio binary frames, update last_activity; send server audio binary frames back to client
 - [ ] T018 [US1] Wire WebSocket endpoint into FastAPI app in src/voice_server/main.py
 
@@ -150,6 +150,7 @@
 - [ ] T036 Implement graceful shutdown — SIGTERM handler, set accepting_new=False, send server_shutdown control message to all clients, 30s drain, force close in src/voice_server/main.py
 - [ ] T037 [P] Integration test for graceful shutdown behaviour in tests/integration/test_shutdown.py
 - [ ] T038 [P] Unit test for ALB auth header extraction and LOCAL_MODE bypass in tests/unit/test_auth.py
+- [ ] T041 [P] Integration test verifying unauthenticated WebSocket connections are rejected when LOCAL_MODE=false in tests/integration/test_websocket.py
 - [ ] T039 Wire metrics emission into session lifecycle events (connect, disconnect, timeout, error) in src/voice_server/ws/handler.py
 - [ ] T040 Run quickstart.md validation — verify all commands work end-to-end
 
@@ -243,4 +244,4 @@ Task: "Wire into FastAPI app"
 - Each user story is independently completable and testable
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
-- Total tasks: 40
+- Total tasks: 41
