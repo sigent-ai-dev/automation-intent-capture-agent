@@ -9,7 +9,6 @@ from voice_server.observability.metrics import (
     record_error,
     record_session_connect,
     record_session_disconnect,
-    record_session_timeout,
 )
 from voice_server.sessions.registry import registry
 from voice_server.ws.auth import extract_user_id

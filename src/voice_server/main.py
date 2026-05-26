@@ -11,7 +11,6 @@ from voice_server.observability.logging import configure_logging, get_logger
 from voice_server.sessions.cleanup import start_cleanup_task, stop_cleanup_task
 from voice_server.sessions.registry import registry
 from voice_server.ws.handler import websocket_audio_endpoint
-from voice_server.ws.protocol import make_server_shutdown
 
 settings = get_settings()
 configure_logging(settings.log_level)
