@@ -1,5 +1,3 @@
-import pytest
-
 import voice_server.main as main_module
 
 

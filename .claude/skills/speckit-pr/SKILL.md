@@ -1,11 +1,12 @@
 ---
 name: "speckit-pr"
 description: "Create a pull request with generated description and closing-claim accuracy gate."
-argument-hint: "Optional base branch (default: main)"
-compatibility: "Requires GitHub repo"
+argument-hint: ""
+compatibility: "Requires GitHub repo with gh CLI"
 metadata:
   author: "speckit-extras"
-  source: "speckit-extras/templates/commands/pr.md"
+  source: "speckit-extras/extension/commands/speckit.pr.md"
+  version: "2.0.0"
 user-invocable: true
 disable-model-invocation: false
 ---
@@ -21,7 +22,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-`/speckit-pr` creates a pull request with a quality-gated description. It generates the PR body from spec docs + git history + PR template, validates closing claims against issue acceptance criteria, and runs self-review as a mandatory pre-flight.
+`/speckit.pr` creates a pull request with a quality-gated description. It generates the PR body from spec docs + git history + PR template, validates closing claims against issue acceptance criteria, and runs self-review as a mandatory pre-flight.
 
 ### Pre-flight Checks
 
@@ -29,7 +30,7 @@ Before opening the PR:
 
 1. **Refuse** if working tree has uncommitted changes.
 2. **Refuse** if branch has no commits ahead of base (default: `main`).
-3. **Run `/speckit-selfreview`** against the diff.
+3. **Run `/speckit.selfreview`** against the diff.
 4. **Refuse** if self-review returns C-severity findings (would block merge anyway — fail fast).
 
 ### Execution Flow
@@ -94,7 +95,7 @@ This is the **load-bearing discipline** — it prevents issues being closed with
 
 **Step 5 — Run self-review and post as comment.**
 
-- Execute the full `/speckit-selfreview` process
+- Execute the full `/speckit.selfreview` process
 - If verdict is APPROVE or COMMENT → proceed
 - If verdict is REQUEST CHANGES with only M/L findings → proceed (post as comment)
 - If verdict is REQUEST CHANGES with C/H findings → ABORT (fix first)

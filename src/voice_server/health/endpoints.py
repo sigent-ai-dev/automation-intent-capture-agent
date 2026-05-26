@@ -23,7 +23,11 @@ async def readiness():
     from voice_server.main import accepting_new
 
     if not accepting_new:
-        return {"status": "draining", "active_sessions": registry.active_count, "uptime_seconds": _uptime()}
+        return {
+            "status": "draining",
+            "active_sessions": registry.active_count,
+            "uptime_seconds": _uptime(),
+        }
 
     return {
         "status": "ready",
