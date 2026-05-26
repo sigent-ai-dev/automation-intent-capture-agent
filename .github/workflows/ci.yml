@@ -35,6 +35,50 @@ jobs:
       - name: Integration tests
         run: uv run pytest tests/integration/ -v --tb=short
 
+  smoke-test:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      - name: Build Docker image
+        run: docker build -t voice-server:test .
+      - name: Start container
+        run: |
+          docker run -d --name voice-server -p 8080:8080 -e LOCAL_MODE=true voice-server:test
+          sleep 3
+      - name: Health endpoint smoke
+        run: |
+          curl -f http://localhost:8080/health/live | grep -q '"alive"'
+          curl -f http://localhost:8080/health/ready | grep -q '"ready"'
+      - name: WebSocket handshake smoke
+        run: |
+          uv run python -c "
+          import asyncio, json, websockets
+
+          async def test():
+              async with websockets.connect('ws://localhost:8080/ws/audio') as ws:
+                  await ws.send(json.dumps({
+                      'type': 'codec_negotiate',
+                      'codec': 'pcm',
+                      'sample_rate': 16000,
+                      'bit_depth': 16,
+                      'channels': 1,
+                  }))
+                  ack = json.loads(await ws.recv())
+                  assert ack['type'] == 'codec_ack', f'Expected codec_ack, got {ack}'
+                  ready = json.loads(await ws.recv())
+                  assert ready['type'] == 'session_ready', f'Expected session_ready, got {ready}'
+                  print('PASS: WebSocket connection + codec negotiation')
+
+          asyncio.run(test())
+          "
+      - name: Stop container
+        if: always()
+        run: docker stop voice-server && docker rm voice-server || true
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -43,11 +87,7 @@ jobs:
         with:
           version: "latest"
       - run: uv build
-      - name: Docker build + smoke test
-        run: |
-          docker build -t voice-server:test .
-          docker run -d --name voice-server -p 8080:8080 -e LOCAL_MODE=true voice-server:test
-          sleep 3
-          curl -f http://localhost:8080/health/live | grep -q '"alive"'
-          curl -f http://localhost:8080/health/ready | grep -q '"ready"'
-          docker stop voice-server && docker rm voice-server
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
