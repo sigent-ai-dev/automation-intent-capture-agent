@@ -105,7 +105,7 @@ If no audio activity occurs for an extended period (175 seconds), the voice serv
 - **FR-008**: System MUST buffer user audio during reconnection and forward it once the new connection is established.
 - **FR-009**: System MUST handle voice service errors (throttling, model errors, timeouts) with immediate retry (up to 3 attempts, no delay). If all attempts fail, notify the user and keep the session alive in a recoverable state.
 - **FR-010**: System MUST convert between WebSocket audio format (PCM 16-bit 16kHz) and the voice service's expected input/output formats.
-- **FR-011**: System MUST maintain a conversation transcript (text) for history replay on reconnection, using a sliding window strategy: keep the last N turns verbatim and summarise earlier turns into a condensed paragraph to stay within the voice service's context limits.
+- **FR-011**: System MUST maintain a conversation transcript (text) for history replay on reconnection, using a sliding window strategy: keep the last 10 turns verbatim and summarise earlier turns into a condensed paragraph to stay within the voice service's context limits.
 - **FR-012**: System MUST emit structured logs with session correlation IDs for all voice connection lifecycle events (connect, reconnect, disconnect, barge-in, error).
 - **FR-013**: System MUST publish CloudWatch metrics: reconnection count and duration, barge-in detection latency, audio round-trip time, and error count by type.
 - **FR-014**: System MUST propagate X-Ray trace context across the WebSocket server and voice bridge layer for distributed tracing.

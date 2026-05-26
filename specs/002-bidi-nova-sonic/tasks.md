@@ -37,7 +37,7 @@
 - [ ] T006 [P] Implement audio downsampling (24kHz → 16kHz PCM) in src/voice_server/audio/resample.py
 - [ ] T007 [P] Implement WebSocketBidiInput protocol (asyncio.Queue consumer, yields audio chunks) in src/voice_server/bidi/input.py
 - [ ] T008 [P] Implement WebSocketBidiOutput protocol (receives agent events, routes audio/text/signals) in src/voice_server/bidi/output.py
-- [ ] T009 Implement BidiAgent factory (create agent with model, system prompt placeholder, config) in src/voice_server/bidi/agent.py
+- [ ] T009 Implement BidiAgent factory and AudioBridge skeleton (create agent with model + config, AudioBridge class that owns BidiInput/BidiOutput/agent lifecycle) in src/voice_server/bidi/agent.py
 
 **Checkpoint**: Foundation ready — all bridge components exist independently
 
@@ -98,7 +98,7 @@
 
 - [ ] T023 [P] [US3] Unit test for VoiceConnection state machine (CONNECTING→ACTIVE→RECONNECTING→DRAINING→CLOSED) in tests/unit/test_connection.py
 - [ ] T024 [P] [US3] Unit test for reconnection logic (timer fires, new session created, swap occurs, old closes) in tests/unit/test_reconnect.py
-- [ ] T025 [P] [US3] Unit test for ConversationHistory sliding window (add turns, summary generation, replay output) in tests/unit/test_history.py
+- [ ] T025 [P] [US3] Unit test for ConversationHistory sliding window (add turns, summary generation, replay output, overflow beyond window_size triggers summarisation) in tests/unit/test_history.py
 
 ### Implementation for User Story 3
 
