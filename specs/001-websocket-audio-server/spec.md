@@ -8,6 +8,17 @@
 
 **Input**: User description: "Voice MVP: WebSocket server with FastAPI + Uvicorn that accepts browser audio connections, manages session lifecycle, and provides the bridge between client audio and the Strands BidiAgent."
 
+## Clarifications
+
+### Session 2026-05-26
+
+- Q: What wire format should the WebSocket use for audio vs control messages? → A: Binary frames for audio, JSON text frames for control messages (codec-ack, session events, errors, ping/pong)
+- Q: What authentication approach should the server use, and should auth be in scope? → A: ALB + Cognito OAuth2/OIDC. ALB authenticates on WebSocket upgrade request using Cognito user pool. Auth is in scope for MVP.
+- Q: What should the default stale connection timeout be? → A: 30 seconds — no audio frames within this period triggers cleanup.
+- Q: What observability signals should the server emit? → A: Structured logs + key metrics. Use AWS Lambda Powertools for any Lambda components and X-Ray for distributed tracing. ECS server emits structured JSON logs with session correlation IDs and CloudWatch metrics (active sessions, connection duration, errors).
+- Q: How long should the graceful shutdown drain period be? → A: 30 seconds — matches ECS Fargate default stopTimeout, then force-terminate remaining sessions.
+- Q: What should the health check semantics be? → A: Both liveness and readiness — `/health/live` (process alive, always 200) and `/health/ready` (accepting new sessions, capacity-aware). ALB target group uses the readiness endpoint.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Establish Audio Connection (Priority: P1)
@@ -99,17 +110,21 @@ The server can be packaged into a container image suitable for deployment on a m
 
 ### Functional Requirements
 
-- **FR-001**: System MUST accept WebSocket connections from browser clients for bidirectional audio streaming.
+- **FR-001**: System MUST accept WebSocket connections from browser clients for bidirectional audio streaming, using binary frames for audio data and JSON text frames for control messages.
 - **FR-002**: System MUST negotiate audio codec on connection, supporting PCM 16-bit at 16kHz sample rate (mono).
 - **FR-003**: System MUST reject connections that request unsupported audio codecs with an appropriate error message.
+- **FR-012**: System MUST require authenticated users via ALB-enforced Cognito OAuth2/OIDC validation on WebSocket upgrade. Unauthenticated requests MUST be rejected before reaching the application.
 - **FR-004**: System MUST track each connected client as a distinct session with its own lifecycle state (connecting → streaming → disconnecting → closed).
 - **FR-005**: System MUST clean up all resources associated with a session upon disconnection (graceful or forced).
-- **FR-006**: System MUST detect stale connections that have not communicated within a configurable timeout period and terminate them.
-- **FR-007**: System MUST expose an HTTP health check endpoint that reports server readiness.
+- **FR-006**: System MUST detect stale connections that have not communicated within a configurable timeout period (default: 30 seconds) and terminate them.
+- **FR-007**: System MUST expose a liveness endpoint (`/health/live` — process alive, always 200) and a readiness endpoint (`/health/ready` — capacity-aware, returns non-200 when unable to accept new sessions). ALB target group health check uses the readiness endpoint.
 - **FR-008**: System MUST support running directly via uvicorn for local development with auto-reload capability.
 - **FR-009**: System MUST include a container definition suitable for managed container service deployment.
 - **FR-010**: System MUST handle concurrent sessions independently without cross-session interference.
-- **FR-011**: System MUST perform graceful shutdown, allowing active sessions to complete or notifying connected clients before terminating.
+- **FR-011**: System MUST perform graceful shutdown with a 30-second drain period, notifying connected clients and allowing active sessions to complete before force-terminating.
+- **FR-013**: System MUST emit structured JSON logs with session correlation IDs for all connection lifecycle events and errors.
+- **FR-014**: System MUST publish key operational metrics (active session count, connection duration, error rate) to CloudWatch.
+- **FR-015**: System MUST support X-Ray tracing for distributed request correlation across ECS and any Lambda components. Lambda components MUST use AWS Lambda Powertools for structured logging, metrics, and tracing.
 
 ### Key Entities
 
@@ -133,7 +148,7 @@ The server can be packaged into a container image suitable for deployment on a m
 - Clients are modern web browsers with WebSocket and Web Audio API support.
 - Audio is mono channel (single channel) — stereo is out of scope for this MVP.
 - The server acts as a bridge/relay; audio processing (transcription, synthesis) happens in a downstream service (Strands BidiAgent), which is out of scope for this issue.
-- Authentication and authorization are handled separately and are not part of this server's responsibility in the MVP.
+- Authentication is handled at the ALB layer via Cognito OAuth2/OIDC; the server trusts that any connection forwarded by the ALB is authenticated and can extract user identity from ALB-injected headers.
 - The container deployment target is ECS Fargate, but the Dockerfile does not include Fargate-specific infrastructure (task definitions, service config) — only the image itself.
 - The server will sit behind an Application Load Balancer that handles TLS termination; the server itself communicates over plain WebSocket (ws://) internally.
 - Maximum concurrent sessions will be bounded by container resources rather than an application-level hard limit in the MVP.
@@ -144,7 +159,9 @@ The server can be packaged into a container image suitable for deployment on a m
 
 - WebSocket server accepting audio connections
 - Audio codec negotiation (PCM 16-bit 16kHz)
+- Binary frames for audio, JSON text frames for control messages
 - Session lifecycle management
+- ALB + Cognito OAuth2/OIDC authentication on WebSocket upgrade
 - Health check endpoint
 - Dockerfile for containerisation
 - Local development mode
@@ -155,7 +172,7 @@ The server can be packaged into a container image suitable for deployment on a m
 - Nova Sonic integration
 - Elicitation logic
 - Terraform/infrastructure deployment
-- Authentication and authorization
+- Cognito user pool provisioning (assumes existing pool)
 - Audio transcription or synthesis
 - Client-side implementation
 - Load testing infrastructure
