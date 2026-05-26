@@ -46,6 +46,8 @@ class CaptureResult:
 class CaptureSession:
     id: str = field(default_factory=lambda: str(uuid4()))
     project_name: str = ""
+    downstream_tool: str | None = None
+    notification_webhook: str | None = None
     status: CaptureStatus = CaptureStatus.PENDING
     progress: CaptureProgress = field(default_factory=CaptureProgress)
     result: CaptureResult | None = None

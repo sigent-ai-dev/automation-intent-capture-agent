@@ -13,13 +13,17 @@ def client():
 
 def test_websocket_connect_and_negotiate(client):
     with client.websocket_connect("/ws/audio") as ws:
-        ws.send_text(json.dumps({
-            "type": "codec_negotiate",
-            "codec": "pcm",
-            "sample_rate": 16000,
-            "bit_depth": 16,
-            "channels": 1,
-        }))
+        ws.send_text(
+            json.dumps(
+                {
+                    "type": "codec_negotiate",
+                    "codec": "pcm",
+                    "sample_rate": 16000,
+                    "bit_depth": 16,
+                    "channels": 1,
+                }
+            )
+        )
         response = json.loads(ws.receive_text())
         assert response["type"] == "codec_ack"
         assert response["codec"] == "pcm"
@@ -31,13 +35,17 @@ def test_websocket_connect_and_negotiate(client):
 
 def test_websocket_reject_unsupported_codec(client):
     with client.websocket_connect("/ws/audio") as ws:
-        ws.send_text(json.dumps({
-            "type": "codec_negotiate",
-            "codec": "opus",
-            "sample_rate": 48000,
-            "bit_depth": 16,
-            "channels": 2,
-        }))
+        ws.send_text(
+            json.dumps(
+                {
+                    "type": "codec_negotiate",
+                    "codec": "opus",
+                    "sample_rate": 48000,
+                    "bit_depth": 16,
+                    "channels": 2,
+                }
+            )
+        )
         response = json.loads(ws.receive_text())
         assert response["type"] == "codec_reject"
         assert "opus" in response["reason"].lower() or "Unsupported" in response["reason"]
@@ -45,13 +53,17 @@ def test_websocket_reject_unsupported_codec(client):
 
 def test_websocket_binary_audio_exchange(client):
     with client.websocket_connect("/ws/audio") as ws:
-        ws.send_text(json.dumps({
-            "type": "codec_negotiate",
-            "codec": "pcm",
-            "sample_rate": 16000,
-            "bit_depth": 16,
-            "channels": 1,
-        }))
+        ws.send_text(
+            json.dumps(
+                {
+                    "type": "codec_negotiate",
+                    "codec": "pcm",
+                    "sample_rate": 16000,
+                    "bit_depth": 16,
+                    "channels": 1,
+                }
+            )
+        )
         ws.receive_text()  # codec_ack
         ws.receive_text()  # session_ready
 
@@ -63,13 +75,17 @@ def test_websocket_binary_audio_exchange(client):
 
 def test_websocket_ping_pong(client):
     with client.websocket_connect("/ws/audio") as ws:
-        ws.send_text(json.dumps({
-            "type": "codec_negotiate",
-            "codec": "pcm",
-            "sample_rate": 16000,
-            "bit_depth": 16,
-            "channels": 1,
-        }))
+        ws.send_text(
+            json.dumps(
+                {
+                    "type": "codec_negotiate",
+                    "codec": "pcm",
+                    "sample_rate": 16000,
+                    "bit_depth": 16,
+                    "channels": 1,
+                }
+            )
+        )
         ws.receive_text()  # codec_ack
         ws.receive_text()  # session_ready
 
@@ -80,13 +96,17 @@ def test_websocket_ping_pong(client):
 
 def test_websocket_invalid_message(client):
     with client.websocket_connect("/ws/audio") as ws:
-        ws.send_text(json.dumps({
-            "type": "codec_negotiate",
-            "codec": "pcm",
-            "sample_rate": 16000,
-            "bit_depth": 16,
-            "channels": 1,
-        }))
+        ws.send_text(
+            json.dumps(
+                {
+                    "type": "codec_negotiate",
+                    "codec": "pcm",
+                    "sample_rate": 16000,
+                    "bit_depth": 16,
+                    "channels": 1,
+                }
+            )
+        )
         ws.receive_text()  # codec_ack
         ws.receive_text()  # session_ready
 

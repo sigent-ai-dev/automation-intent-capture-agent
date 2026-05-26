@@ -165,8 +165,7 @@ def status(
                 s["status"], "[dim]○[/]"
             )
             console.print(
-                f"  {status_icon} {s['session_id']}  {s['status']}  "
-                f"{s.get('project_name', '')}"
+                f"  {status_icon} {s['session_id']}  {s['status']}  {s.get('project_name', '')}"
             )
 
 

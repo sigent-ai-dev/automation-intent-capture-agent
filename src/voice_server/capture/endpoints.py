@@ -11,6 +11,8 @@ router = APIRouter(prefix="/sessions", tags=["capture"])
 
 class CreateSessionRequest(BaseModel):
     project_name: str = "unnamed"
+    downstream_tool: str | None = None
+    notification_webhook: str | None = None
 
 
 class CreateSessionResponse(BaseModel):
@@ -22,7 +24,11 @@ class CreateSessionResponse(BaseModel):
 
 @router.post("", response_model=CreateSessionResponse, status_code=201)
 async def create_session(body: CreateSessionRequest) -> dict:
-    session = CaptureSession(project_name=body.project_name)
+    session = CaptureSession(
+        project_name=body.project_name,
+        downstream_tool=body.downstream_tool,
+        notification_webhook=body.notification_webhook,
+    )
     capture_store.create(session)
     return session.to_summary_dict()
 

@@ -26,12 +26,16 @@ def test_health_ready_returns_draining_during_shutdown(client):
 def test_websocket_still_works_during_drain(client):
     """Existing connections should still function during drain."""
     with client.websocket_connect("/ws/audio") as ws:
-        ws.send_text(json.dumps({
-            "type": "codec_negotiate",
-            "codec": "pcm",
-            "sample_rate": 16000,
-            "bit_depth": 16,
-            "channels": 1,
-        }))
+        ws.send_text(
+            json.dumps(
+                {
+                    "type": "codec_negotiate",
+                    "codec": "pcm",
+                    "sample_rate": 16000,
+                    "bit_depth": 16,
+                    "channels": 1,
+                }
+            )
+        )
         response = json.loads(ws.receive_text())
         assert response["type"] == "codec_ack"
