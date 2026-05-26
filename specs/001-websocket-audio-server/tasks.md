@@ -20,10 +20,10 @@
 
 **Purpose**: Project initialization, dependencies, and tooling
 
-- [ ] T001 Create project directory structure per plan.md layout (src/voice_server/, tests/unit/, tests/integration/)
-- [ ] T002 Initialize Python project with pyproject.toml — FastAPI, uvicorn, structlog, aws-embedded-metrics, aws-xray-sdk, pytest, pytest-asyncio, httpx, websockets
-- [ ] T003 [P] Configure structlog with JSON output in src/voice_server/observability/logging.py
-- [ ] T004 [P] Create environment configuration module in src/voice_server/config.py (PORT, LOG_LEVEL, STALE_SESSION_TIMEOUT_SECONDS, SHUTDOWN_DRAIN_SECONDS, LOCAL_MODE)
+- [x] T001 Create project directory structure per plan.md layout (src/voice_server/, tests/unit/, tests/integration/)
+- [x] T002 Initialize Python project with pyproject.toml — FastAPI, uvicorn, structlog, aws-embedded-metrics, aws-xray-sdk, pytest, pytest-asyncio, httpx, websockets
+- [x] T003 [P] Configure structlog with JSON output in src/voice_server/observability/logging.py
+- [x] T004 [P] Create environment configuration module in src/voice_server/config.py (PORT, LOG_LEVEL, STALE_SESSION_TIMEOUT_SECONDS, SHUTDOWN_DRAIN_SECONDS, LOCAL_MODE)
 
 ---
 
@@ -33,13 +33,13 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 [P] Implement AudioCodec value object in src/voice_server/models/codec.py and SessionState enum in src/voice_server/models/session.py
-- [ ] T006 [P] Implement Session dataclass with lifecycle state in src/voice_server/models/session.py
-- [ ] T007 Implement SessionRegistry (Dict-based CRUD, lookup by id/user_id, enforce single active session per user_id — close existing session if new connection from same user) in src/voice_server/sessions/registry.py
-- [ ] T008 [P] Implement control message protocol (parse/serialize JSON text frames) in src/voice_server/ws/protocol.py
-- [ ] T009 [P] Implement ALB auth header extraction (x-amzn-oidc-identity, LOCAL_MODE bypass) in src/voice_server/ws/auth.py
-- [ ] T010 Create FastAPI app skeleton with lifespan handler in src/voice_server/main.py
-- [ ] T011 [P] Create shared test fixtures (mock sessions, test client, WebSocket test helper) in tests/conftest.py
+- [x] T005 [P] Implement AudioCodec value object in src/voice_server/models/codec.py and SessionState enum in src/voice_server/models/session.py
+- [x] T006 [P] Implement Session dataclass with lifecycle state in src/voice_server/models/session.py
+- [x] T007 Implement SessionRegistry (Dict-based CRUD, lookup by id/user_id, enforce single active session per user_id — close existing session if new connection from same user) in src/voice_server/sessions/registry.py
+- [x] T008 [P] Implement control message protocol (parse/serialize JSON text frames) in src/voice_server/ws/protocol.py
+- [x] T009 [P] Implement ALB auth header extraction (x-amzn-oidc-identity, LOCAL_MODE bypass) in src/voice_server/ws/auth.py
+- [x] T010 Create FastAPI app skeleton with lifespan handler in src/voice_server/main.py
+- [x] T011 [P] Create shared test fixtures (mock sessions, test client, WebSocket test helper) in tests/conftest.py
 
 **Checkpoint**: Foundation ready — user story implementation can now begin
 
@@ -53,16 +53,16 @@
 
 ### Tests for User Story 1
 
-- [ ] T012 [P] [US1] Unit test for codec negotiation (accept PCM, reject unsupported) in tests/unit/test_codec.py
-- [ ] T013 [P] [US1] Unit test for control message protocol parsing/serialization in tests/unit/test_protocol.py
-- [ ] T014 [P] [US1] Integration test for full WebSocket connection flow (upgrade → negotiate → stream → close) in tests/integration/test_websocket.py
+- [x] T012 [P] [US1] Unit test for codec negotiation (accept PCM, reject unsupported) in tests/unit/test_codec.py
+- [x] T013 [P] [US1] Unit test for control message protocol parsing/serialization in tests/unit/test_protocol.py
+- [x] T014 [P] [US1] Integration test for full WebSocket connection flow (upgrade → negotiate → stream → close) in tests/integration/test_websocket.py
 
 ### Implementation for User Story 1
 
-- [ ] T015 [US1] Implement WebSocket endpoint handler at /ws/audio in src/voice_server/ws/handler.py — accept connection, route text/binary frames
-- [ ] T016 [US1] Implement codec negotiation logic in handler — validate codec_negotiate message, respond with codec_ack or codec_reject, transition session to STREAMING. Enforce 5-second negotiation timeout (close with CODEC_TIMEOUT error if no codec_negotiate received after upgrade)
-- [ ] T017 [US1] Implement binary frame forwarding — receive client audio binary frames, update last_activity; send server audio binary frames back to client
-- [ ] T018 [US1] Wire WebSocket endpoint into FastAPI app in src/voice_server/main.py
+- [x] T015 [US1] Implement WebSocket endpoint handler at /ws/audio in src/voice_server/ws/handler.py — accept connection, route text/binary frames
+- [x] T016 [US1] Implement codec negotiation logic in handler — validate codec_negotiate message, respond with codec_ack or codec_reject, transition session to STREAMING. Enforce 5-second negotiation timeout (close with CODEC_TIMEOUT error if no codec_negotiate received after upgrade)
+- [x] T017 [US1] Implement binary frame forwarding — receive client audio binary frames, update last_activity; send server audio binary frames back to client
+- [x] T018 [US1] Wire WebSocket endpoint into FastAPI app in src/voice_server/main.py
 
 **Checkpoint**: A client can connect, negotiate codec, and exchange binary audio frames
 
@@ -76,16 +76,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Unit test for session registry (create, get, remove, list) in tests/unit/test_registry.py
-- [ ] T020 [P] [US2] Unit test for stale session cleanup (30s timeout detection) in tests/unit/test_cleanup.py
-- [ ] T021 [P] [US2] Integration test for session timeout and concurrent session isolation in tests/integration/test_websocket.py
+- [x] T019 [P] [US2] Unit test for session registry (create, get, remove, list) in tests/unit/test_registry.py
+- [x] T020 [P] [US2] Unit test for stale session cleanup (30s timeout detection) in tests/unit/test_cleanup.py
+- [x] T021 [P] [US2] Integration test for session timeout and concurrent session isolation in tests/integration/test_websocket.py
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Implement background stale-session cleanup task (10s scan interval, 30s timeout) in src/voice_server/sessions/cleanup.py
-- [ ] T023 [US2] Integrate session creation/removal into WebSocket handler — create session on connect, remove on disconnect, update last_activity on every frame in src/voice_server/ws/handler.py
-- [ ] T024 [US2] Implement graceful disconnect handling — send close frame, transition STREAMING → DISCONNECTING → CLOSED, release resources in src/voice_server/ws/handler.py
-- [ ] T025 [US2] Start cleanup task in lifespan startup, cancel on shutdown in src/voice_server/main.py
+- [x] T022 [US2] Implement background stale-session cleanup task (10s scan interval, 30s timeout) in src/voice_server/sessions/cleanup.py
+- [x] T023 [US2] Integrate session creation/removal into WebSocket handler — create session on connect, remove on disconnect, update last_activity on every frame in src/voice_server/ws/handler.py
+- [x] T024 [US2] Implement graceful disconnect handling — send close frame, transition STREAMING → DISCONNECTING → CLOSED, release resources in src/voice_server/ws/handler.py
+- [x] T025 [US2] Start cleanup task in lifespan startup, cancel on shutdown in src/voice_server/main.py
 
 **Checkpoint**: Sessions are tracked, stale connections are cleaned up, concurrent sessions are isolated
 
@@ -99,12 +99,12 @@
 
 ### Tests for User Story 3
 
-- [ ] T026 [P] [US3] Integration test for health endpoints (live, ready, ready-during-drain) in tests/integration/test_health.py
+- [x] T026 [P] [US3] Integration test for health endpoints (live, ready, ready-during-drain) in tests/integration/test_health.py
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Implement /health/live and /health/ready endpoints in src/voice_server/health/endpoints.py — readiness checks accepting_new flag and reports active session count
-- [ ] T028 [US3] Register health router in FastAPI app in src/voice_server/main.py
+- [x] T027 [US3] Implement /health/live and /health/ready endpoints in src/voice_server/health/endpoints.py — readiness checks accepting_new flag and reports active session count
+- [x] T028 [US3] Register health router in FastAPI app in src/voice_server/main.py
 
 **Checkpoint**: ALB can determine server liveness and readiness
 
@@ -118,9 +118,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T029 [US4] Ensure LOCAL_MODE=true bypasses ALB header validation in src/voice_server/ws/auth.py (already scaffolded in T009, verify integration)
-- [ ] T030 [US4] Add `if __name__ == "__main__"` uvicorn runner in src/voice_server/main.py with configurable host/port
-- [ ] T031 [US4] Verify auto-reload works with uvicorn --reload flag (manual validation, document in quickstart)
+- [x] T029 [US4] Ensure LOCAL_MODE=true bypasses ALB header validation in src/voice_server/ws/auth.py (already scaffolded in T009, verify integration)
+- [x] T030 [US4] Add `if __name__ == "__main__"` uvicorn runner in src/voice_server/main.py with configurable host/port
+- [x] T031 [US4] Verify auto-reload works with uvicorn --reload flag (manual validation, document in quickstart)
 
 **Checkpoint**: Developer can run and iterate locally with zero infrastructure
 
@@ -134,8 +134,8 @@
 
 ### Implementation for User Story 5
 
-- [ ] T032 [US5] Create Dockerfile — Python 3.11 slim base, copy src, install deps, expose port 8080, CMD uvicorn
-- [ ] T033 [US5] Add .dockerignore (tests/, specs/, .specify/, .git/, __pycache__/)
+- [x] T032 [US5] Create Dockerfile — Python 3.11 slim base, copy src, install deps, expose port 8080, CMD uvicorn
+- [x] T033 [US5] Add .dockerignore (tests/, specs/, .specify/, .git/, __pycache__/)
 
 **Checkpoint**: Container image builds and runs the voice server correctly
 
@@ -145,14 +145,14 @@
 
 **Purpose**: Observability, graceful shutdown, auth integration, final hardening
 
-- [ ] T034 [P] Implement CloudWatch embedded metrics helper (active_sessions, connection_duration, error_count) in src/voice_server/observability/metrics.py
-- [ ] T035 [P] Configure X-Ray SDK tracing in src/voice_server/main.py (patch asyncio, add middleware)
-- [ ] T036 Implement graceful shutdown — SIGTERM handler, set accepting_new=False, send server_shutdown control message to all clients, 30s drain, force close in src/voice_server/main.py
-- [ ] T037 [P] Integration test for graceful shutdown behaviour in tests/integration/test_shutdown.py
-- [ ] T038 [P] Unit test for ALB auth header extraction and LOCAL_MODE bypass in tests/unit/test_auth.py
-- [ ] T041 [P] Integration test verifying unauthenticated WebSocket connections are rejected when LOCAL_MODE=false in tests/integration/test_websocket.py
-- [ ] T039 Wire metrics emission into session lifecycle events (connect, disconnect, timeout, error) in src/voice_server/ws/handler.py
-- [ ] T040 Run quickstart.md validation — verify all commands work end-to-end
+- [x] T034 [P] Implement CloudWatch embedded metrics helper (active_sessions, connection_duration, error_count) in src/voice_server/observability/metrics.py
+- [x] T035 [P] Configure X-Ray SDK tracing in src/voice_server/main.py (patch asyncio, add middleware)
+- [x] T036 Implement graceful shutdown — SIGTERM handler, set accepting_new=False, send server_shutdown control message to all clients, 30s drain, force close in src/voice_server/main.py
+- [x] T037 [P] Integration test for graceful shutdown behaviour in tests/integration/test_shutdown.py
+- [x] T038 [P] Unit test for ALB auth header extraction and LOCAL_MODE bypass in tests/unit/test_auth.py
+- [x] T041 [P] Integration test verifying unauthenticated WebSocket connections are rejected when LOCAL_MODE=false in tests/integration/test_websocket.py
+- [x] T039 Wire metrics emission into session lifecycle events (connect, disconnect, timeout, error) in src/voice_server/ws/handler.py
+- [x] T040 Run quickstart.md validation — verify all commands work end-to-end
 
 ---
 
