@@ -1,11 +1,12 @@
 ---
 name: "speckit-decompose"
 description: "Decompose design documents into right-sized GitHub issues with acceptance criteria and traceability."
-argument-hint: "Path to design doc, or 'validate #N', or 'link-back <path> #N [#M ...]'"
+argument-hint: ""
 compatibility: "Requires GitHub repo with gh CLI"
 metadata:
   author: "speckit-extras"
-  source: "speckit-extras/templates/commands/decompose.md"
+  source: "speckit-extras/extension/commands/speckit.decompose.md"
+  version: "2.0.0"
 user-invocable: true
 disable-model-invocation: false
 ---
@@ -21,7 +22,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-`/speckit-decompose` turns design documents, ADRs, architecture docs, and other source artefacts into well-formed GitHub issues. It enforces right-sizing, acceptance criteria, and traceability back to the source document.
+`/speckit.decompose` turns design documents, ADRs, architecture docs, and other source artefacts into well-formed GitHub issues. It enforces right-sizing, acceptance criteria, and traceability back to the source document.
 
 ### Three Modes
 

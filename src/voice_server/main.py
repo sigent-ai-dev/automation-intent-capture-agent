@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket
 
 from voice_server.config import get_settings
+from voice_server.capture.endpoints import router as capture_router
 from voice_server.health.endpoints import router as health_router
 from voice_server.observability.logging import configure_logging, get_logger
 from voice_server.sessions.cleanup import start_cleanup_task, stop_cleanup_task
@@ -60,6 +61,7 @@ app = FastAPI(
 )
 
 app.include_router(health_router)
+app.include_router(capture_router)
 
 
 @app.websocket("/ws/audio")
