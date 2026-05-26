@@ -8,6 +8,15 @@
 
 **Input**: User description: "Connect the WebSocket server to Nova Sonic 2 via the Strands SDK BidiAgent for bidirectional voice — STT + TTS + LLM in a single stream. Must handle 8-minute connection limit, 175-second silence timeout, barge-in under 800ms."
 
+## Clarifications
+
+### Session 2026-05-26
+
+- Q: When should proactive reconnection start relative to the 8-minute limit? → A: At 7 minutes (60s before limit) — establish new connection while old is still active, then hot-swap after history replay.
+- Q: How should conversation history be managed when it exceeds the context window? → A: Sliding window with summary — keep last N turns verbatim, summarise earlier turns into a condensed paragraph for replay.
+- Q: What retry strategy should be used for voice service errors? → A: Immediate retry (3 attempts, no delay) — fast recovery, notify user only if all 3 attempts fail.
+- Q: What observability signals should the voice bridge layer emit? → A: Structured logs + CloudWatch metrics (reconnection count/duration, barge-in latency, audio round-trip time, errors by type) + X-Ray spans. Consistent with WebSocket server observability stack.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Full Voice Conversation (Priority: P1)
@@ -90,13 +99,16 @@ If no audio activity occurs for an extended period (175 seconds), the voice serv
 - **FR-002**: System MUST receive synthesised audio from the voice service and stream it back to the user via the WebSocket connection.
 - **FR-003**: System MUST detect user interruption (barge-in) and halt agent audio output within 800ms.
 - **FR-004**: System MUST discard in-progress agent audio on barge-in and process the user's new input.
-- **FR-005**: System MUST automatically reconnect to the voice service before the 8-minute connection limit expires, without user-visible interruption.
+- **FR-005**: System MUST proactively establish a new voice connection at 7 minutes (60s before the 8-minute limit), perform history replay on the new connection while the old remains active, then hot-swap with no user-visible interruption.
 - **FR-006**: System MUST replay conversation history on reconnection so the agent retains full context.
 - **FR-007**: System MUST handle 175-second silence timeout by transitioning to a recoverable state and reconnecting when the user resumes.
 - **FR-008**: System MUST buffer user audio during reconnection and forward it once the new connection is established.
-- **FR-009**: System MUST handle voice service errors (throttling, model errors, timeouts) gracefully without crashing the session.
+- **FR-009**: System MUST handle voice service errors (throttling, model errors, timeouts) with immediate retry (up to 3 attempts, no delay). If all attempts fail, notify the user and keep the session alive in a recoverable state.
 - **FR-010**: System MUST convert between WebSocket audio format (PCM 16-bit 16kHz) and the voice service's expected input/output formats.
-- **FR-011**: System MUST maintain a conversation transcript (text) for history replay on reconnection.
+- **FR-011**: System MUST maintain a conversation transcript (text) for history replay on reconnection, using a sliding window strategy: keep the last N turns verbatim and summarise earlier turns into a condensed paragraph to stay within the voice service's context limits.
+- **FR-012**: System MUST emit structured logs with session correlation IDs for all voice connection lifecycle events (connect, reconnect, disconnect, barge-in, error).
+- **FR-013**: System MUST publish CloudWatch metrics: reconnection count and duration, barge-in detection latency, audio round-trip time, and error count by type.
+- **FR-014**: System MUST propagate X-Ray trace context across the WebSocket server and voice bridge layer for distributed tracing.
 
 ### Key Entities
 
