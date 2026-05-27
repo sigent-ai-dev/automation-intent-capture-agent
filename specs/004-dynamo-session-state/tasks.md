@@ -59,6 +59,8 @@
 - [ ] T012 [US1] Implement drain_all() — batch_write_item for all active sessions with retry loop in src/voice_server/persistence/session_adapter.py
 - [ ] T013 [US1] Wire drain_all() into graceful shutdown handler (SIGTERM) — persist all sessions before exit in src/voice_server/main.py
 - [ ] T014 [US1] Wire persistence adapter into application startup — create adapter, pass to SessionRegistry in src/voice_server/main.py
+- [ ] T015 [US1] Implement list_active_sessions() using GSI status-index query (eventual consistency) in src/voice_server/persistence/session_adapter.py
+- [ ] T016 [US1] Implement graceful degradation — if DynamoDB unreachable, log warning and continue in-memory only in src/voice_server/persistence/client.py
 
 **Checkpoint**: Sessions survive container restarts via graceful drain + resume
 
@@ -72,14 +74,14 @@
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] Unit test for history adapter (save after turn, load on resume, TTL refresh) in tests/unit/test_history_adapter.py
+- [ ] T017 [P] [US2] Unit test for history adapter (save after turn, load on resume, TTL refresh) in tests/unit/test_history_adapter.py
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Implement HistoryPersistenceAdapter (save after each add_turn, load on session resume) in src/voice_server/persistence/history_adapter.py
-- [ ] T017 [US2] Modify ConversationHistory to accept optional persistence adapter — call adapter.save() on add_turn in src/voice_server/bidi/history.py
-- [ ] T018 [US2] Wire history adapter into AudioBridge — create adapter, pass to ConversationHistory on session start in src/voice_server/bidi/agent.py
-- [ ] T019 [US2] Load history from DynamoDB on session resume (when draft session detected) in src/voice_server/bidi/agent.py
+- [ ] T018 [US2] Implement HistoryPersistenceAdapter (save after each add_turn, load on session resume) in src/voice_server/persistence/history_adapter.py
+- [ ] T019 [US2] Modify ConversationHistory to accept optional persistence adapter — call adapter.save() on add_turn in src/voice_server/bidi/history.py
+- [ ] T020 [US2] Wire history adapter into AudioBridge — create adapter, pass to ConversationHistory on session start in src/voice_server/bidi/agent.py
+- [ ] T021 [US2] Load history from DynamoDB on session resume (when draft session detected) in src/voice_server/bidi/agent.py
 
 **Checkpoint**: Conversation history survives crashes — at most 1 turn lost
 
@@ -93,13 +95,13 @@
 
 ### Tests for User Story 3
 
-- [ ] T020 [P] [US3] Unit test for elicitation adapter (save after tool invocation, load on resume) in tests/unit/test_elicitation_adapter.py
+- [ ] T022 [P] [US3] Unit test for elicitation adapter (save after tool invocation, load on resume) in tests/unit/test_elicitation_adapter.py
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Implement ElicitationPersistenceAdapter (save after each tool invocation, load on session resume) in src/voice_server/persistence/elicitation_adapter.py
-- [ ] T022 [US3] Wire elicitation adapter into tool functions — call adapter.save() after each create/update/finalise in src/voice_server/elicitation/tools.py
-- [ ] T023 [US3] Load elicitation state on session resume — pass to system prompt as resume context in src/voice_server/bidi/agent.py
+- [ ] T023 [US3] Implement ElicitationPersistenceAdapter (save after each tool invocation, load on session resume) in src/voice_server/persistence/elicitation_adapter.py
+- [ ] T024 [US3] Wire elicitation adapter into tool functions — call adapter.save() after each create/update/finalise in src/voice_server/elicitation/tools.py
+- [ ] T025 [US3] Load elicitation state on session resume — pass to system prompt as resume context in src/voice_server/bidi/agent.py
 
 **Checkpoint**: Elicitation progress survives across sessions
 
@@ -113,9 +115,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T024 [US4] Implement TTL refresh on every interaction — update expires_at on session touch in src/voice_server/persistence/session_adapter.py
-- [ ] T025 [US4] Add expiry check on load — if expires_at < now, treat as not found even if DynamoDB hasn't deleted yet in src/voice_server/persistence/session_adapter.py
-- [ ] T026 [US4] Add TTL refresh to history and elicitation adapters (same expires_at as parent session) in src/voice_server/persistence/history_adapter.py and elicitation_adapter.py
+- [ ] T026 [US4] Implement TTL refresh on every interaction — update expires_at on session touch in src/voice_server/persistence/session_adapter.py
+- [ ] T027 [US4] Add expiry check on load — if expires_at < now, treat as not found even if DynamoDB hasn't deleted yet in src/voice_server/persistence/session_adapter.py
+- [ ] T028 [US4] Add TTL refresh to history and elicitation adapters (same expires_at as parent session) in src/voice_server/persistence/history_adapter.py and elicitation_adapter.py
 
 **Checkpoint**: Stale sessions auto-expire, no operator intervention needed
 
@@ -125,11 +127,10 @@
 
 **Purpose**: Observability, error handling, Terraform
 
-- [ ] T027 [P] Add structured logging for persistence operations (save, load, drain, TTL refresh, errors) in src/voice_server/persistence/client.py
-- [ ] T028 [P] Add metrics for persistence (writes/reads count, latency, failures, drain success/failure) in src/voice_server/observability/metrics.py
-- [ ] T029 [P] Add DynamoDB table Terraform resource to infra/dynamodb.tf (matching contracts/dynamo-table-schema.md)
-- [ ] T030 [P] Add graceful degradation — if DynamoDB unreachable, log and continue in-memory only in src/voice_server/persistence/client.py
-- [ ] T031 Run quickstart.md validation — verify persist/load cycle works end-to-end
+- [ ] T029 [P] Add structured logging for persistence operations (save, load, drain, TTL refresh, errors) in src/voice_server/persistence/client.py
+- [ ] T030 [P] Add metrics for persistence (writes/reads count, latency, failures, drain success/failure) in src/voice_server/observability/metrics.py
+- [ ] T031 [P] Add DynamoDB table Terraform resource to infra/dynamodb.tf (matching contracts/dynamo-table-schema.md)
+- [ ] T032 Run quickstart.md validation — verify persist/load cycle works end-to-end
 
 ---
 
@@ -162,8 +163,8 @@
 
 - T004, T005, T006 can run in parallel (Foundational — different files)
 - T007, T008, T009 can run in parallel (US1 tests)
-- T015, T020 can run in parallel (US2/US3 tests — different files)
-- T027, T028, T029, T030 can run in parallel (Polish)
+- T017, T022 can run in parallel (US2/US3 tests — different files)
+- T029, T030, T031 can run in parallel (Polish)
 
 ---
 
@@ -197,4 +198,4 @@
 - [P] tasks = different files, no dependencies on incomplete tasks
 - [Story] label maps task to specific user story for traceability
 - All tests use moto mock — no real DynamoDB needed for unit/integration tests
-- Total tasks: 31
+- Total tasks: 32
