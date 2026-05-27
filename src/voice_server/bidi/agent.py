@@ -16,9 +16,7 @@ from voice_server.observability.logging import get_logger
 logger = get_logger(__name__)
 
 
-def create_bidi_agent(
-    system_prompt: str | None = None, tools: list | None = None
-) -> BidiAgent:
+def create_bidi_agent(system_prompt: str | None = None, tools: list | None = None) -> BidiAgent:
     settings = get_settings()
     model = BidiNovaSonicModel(model_id=settings.nova_sonic_model_id)
     from voice_server.elicitation.tools import (
