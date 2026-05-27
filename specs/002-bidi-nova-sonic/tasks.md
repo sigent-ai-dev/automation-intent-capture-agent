@@ -20,9 +20,9 @@
 
 **Purpose**: Add strands-agents dependency, create package structure for bidi and audio modules
 
-- [ ] T001 Add strands-agents dependency to pyproject.toml and run uv lock
-- [ ] T002 Create package structure: src/voice_server/bidi/__init__.py, src/voice_server/audio/__init__.py
-- [ ] T003 [P] Add new environment variables to src/voice_server/config.py (NOVA_SONIC_MODEL_ID, RECONNECT_BEFORE_SECONDS, HISTORY_WINDOW_SIZE, BARGE_IN_ENERGY_THRESHOLD, MAX_VOICE_RETRIES)
+- [x] T001 Add strands-agents dependency to pyproject.toml and run uv lock
+- [x] T002 Create package structure: src/voice_server/bidi/__init__.py, src/voice_server/audio/__init__.py
+- [x] T003 [P] Add new environment variables to src/voice_server/config.py (NOVA_SONIC_MODEL_ID, RECONNECT_BEFORE_SECONDS, HISTORY_WINDOW_SIZE, BARGE_IN_ENERGY_THRESHOLD, MAX_VOICE_RETRIES)
 
 ---
 
@@ -32,12 +32,12 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Implement VoiceConnection dataclass and VoiceConnectionState enum in src/voice_server/bidi/connection.py
-- [ ] T005 [P] Implement Turn dataclass and ConversationHistory class (add_turn, get_recent, get_summary_and_recent) in src/voice_server/bidi/history.py
-- [ ] T006 [P] Implement audio downsampling (24kHz → 16kHz PCM) in src/voice_server/audio/resample.py
-- [ ] T007 [P] Implement WebSocketBidiInput protocol (asyncio.Queue consumer, yields audio chunks) in src/voice_server/bidi/input.py
-- [ ] T008 [P] Implement WebSocketBidiOutput protocol (receives agent events, routes audio/text/signals) in src/voice_server/bidi/output.py
-- [ ] T009 Implement BidiAgent factory and AudioBridge skeleton (create agent with model + config, AudioBridge class that owns BidiInput/BidiOutput/agent lifecycle) in src/voice_server/bidi/agent.py
+- [x] T004 [P] Implement VoiceConnection dataclass and VoiceConnectionState enum in src/voice_server/bidi/connection.py
+- [x] T005 [P] Implement Turn dataclass and ConversationHistory class (add_turn, get_recent, get_summary_and_recent) in src/voice_server/bidi/history.py
+- [x] T006 [P] Implement audio downsampling (24kHz → 16kHz PCM) in src/voice_server/audio/resample.py
+- [x] T007 [P] Implement WebSocketBidiInput protocol (asyncio.Queue consumer, yields audio chunks) in src/voice_server/bidi/input.py
+- [x] T008 [P] Implement WebSocketBidiOutput protocol (receives agent events, routes audio/text/signals) in src/voice_server/bidi/output.py
+- [x] T009 Implement BidiAgent factory and AudioBridge skeleton (create agent with model + config, AudioBridge class that owns BidiInput/BidiOutput/agent lifecycle) in src/voice_server/bidi/agent.py
 
 **Checkpoint**: Foundation ready — all bridge components exist independently
 
@@ -51,18 +51,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Unit test for WebSocketBidiInput (queue push/yield, empty queue blocks, close stops iteration) in tests/unit/test_bidi_input.py
-- [ ] T011 [P] [US1] Unit test for WebSocketBidiOutput (audio downsample+send, text→history, error→notify) in tests/unit/test_bidi_output.py
-- [ ] T012 [P] [US1] Unit test for audio resample (24kHz→16kHz correctness, empty input, odd-length input) in tests/unit/test_resample.py
-- [ ] T013 [P] [US1] Integration test for full voice flow (connect→negotiate→send audio→receive response→disconnect) in tests/integration/test_bidi_agent.py
+- [x] T010 [P] [US1] Unit test for WebSocketBidiInput (queue push/yield, empty queue blocks, close stops iteration) in tests/unit/test_bidi_input.py
+- [x] T011 [P] [US1] Unit test for WebSocketBidiOutput (audio downsample+send, text→history, error→notify) in tests/unit/test_bidi_output.py
+- [x] T012 [P] [US1] Unit test for audio resample (24kHz→16kHz correctness, empty input, odd-length input) in tests/unit/test_resample.py
+- [x] T013 [P] [US1] Integration test for full voice flow (connect→negotiate→send audio→receive response→disconnect) in tests/integration/test_bidi_agent.py
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Wire BidiInput queue into WebSocket handler — binary frames push to input queue instead of no-op in src/voice_server/ws/handler.py
-- [ ] T015 [US1] Wire BidiOutput to WebSocket — agent audio (downsampled) sent as binary frames, text events logged, agent_speaking/agent_done control messages sent in src/voice_server/bidi/output.py
-- [ ] T016 [US1] Create AudioBridge class that owns BidiInput, BidiOutput, BidiAgent lifecycle for a session in src/voice_server/bidi/agent.py
-- [ ] T017 [US1] Integrate AudioBridge into session lifecycle — create on session start, destroy on session close in src/voice_server/ws/handler.py
-- [ ] T018 [US1] Start BidiAgent.run() as asyncio task when session enters STREAMING state in src/voice_server/bidi/agent.py
+- [x] T014 [US1] Wire BidiInput queue into WebSocket handler — binary frames push to input queue instead of no-op in src/voice_server/ws/handler.py
+- [x] T015 [US1] Wire BidiOutput to WebSocket — agent audio (downsampled) sent as binary frames, text events logged, agent_speaking/agent_done control messages sent in src/voice_server/bidi/output.py
+- [x] T016 [US1] Create AudioBridge class that owns BidiInput, BidiOutput, BidiAgent lifecycle for a session in src/voice_server/bidi/agent.py
+- [x] T017 [US1] Integrate AudioBridge into session lifecycle — create on session start, destroy on session close in src/voice_server/ws/handler.py
+- [x] T018 [US1] Start BidiAgent.run() as asyncio task when session enters STREAMING state in src/voice_server/bidi/agent.py
 
 **Checkpoint**: A user can speak and hear the agent respond through the WebSocket
 
@@ -76,13 +76,13 @@
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Unit test for barge-in detector (energy threshold, debounce, reset) in tests/unit/test_barge_in.py
+- [x] T019 [P] [US2] Unit test for barge-in detector (energy threshold, debounce, reset) in tests/unit/test_barge_in.py
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Implement barge-in energy detector — monitor incoming audio energy while is_agent_speaking is True in src/voice_server/bidi/barge_in.py
-- [ ] T021 [US2] Wire barge-in into BidiOutput — when barge-in detected, flush pending agent audio buffer, set barge_in_detected flag, send barge_in_ack control message in src/voice_server/bidi/output.py
-- [ ] T022 [US2] Wire barge-in into WebSocket handler — stop sending agent binary frames on barge_in_detected until new agent response begins in src/voice_server/ws/handler.py
+- [x] T020 [US2] Implement barge-in energy detector — monitor incoming audio energy while is_agent_speaking is True in src/voice_server/bidi/barge_in.py
+- [x] T021 [US2] Wire barge-in into BidiOutput — when barge-in detected, flush pending agent audio buffer, set barge_in_detected flag, send barge_in_ack control message in src/voice_server/bidi/output.py
+- [x] T022 [US2] Wire barge-in into WebSocket handler — stop sending agent binary frames on barge_in_detected until new agent response begins in src/voice_server/ws/handler.py
 
 **Checkpoint**: User can interrupt the agent and hear a fresh response
 
@@ -96,18 +96,18 @@
 
 ### Tests for User Story 3
 
-- [ ] T023 [P] [US3] Unit test for VoiceConnection state machine (CONNECTING→ACTIVE→RECONNECTING→DRAINING→CLOSED) in tests/unit/test_connection.py
-- [ ] T024 [P] [US3] Unit test for reconnection logic (timer fires, new session created, swap occurs, old closes) in tests/unit/test_reconnect.py
-- [ ] T025 [P] [US3] Unit test for ConversationHistory sliding window (add turns, summary generation, replay output, overflow beyond window_size triggers summarisation) in tests/unit/test_history.py
+- [x] T023 [P] [US3] Unit test for VoiceConnection state machine (CONNECTING→ACTIVE→RECONNECTING→DRAINING→CLOSED) in tests/unit/test_connection.py
+- [x] T024 [P] [US3] Unit test for reconnection logic (timer fires, new session created, swap occurs, old closes) in tests/unit/test_reconnect.py
+- [x] T025 [P] [US3] Unit test for ConversationHistory sliding window (add turns, summary generation, replay output, overflow beyond window_size triggers summarisation) in tests/unit/test_history.py
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Implement reconnection timer — asyncio timer fires at reconnect_at, triggers swap logic in src/voice_server/bidi/reconnect.py
-- [ ] T027 [US3] Implement hot-swap — create new BidiAgent in parallel, feed history as system context, swap input/output atomically in src/voice_server/bidi/reconnect.py
-- [ ] T028 [US3] Implement history summarisation — when turns > window_size, summarise oldest turns into a paragraph in src/voice_server/bidi/history.py
-- [ ] T029 [US3] Buffer user audio during RECONNECTING state — queue frames, flush to new session once ACTIVE in src/voice_server/bidi/input.py
-- [ ] T030 [US3] Send voice_reconnecting/voice_reconnected control messages to client during swap in src/voice_server/bidi/reconnect.py
-- [ ] T031 [US3] Wire reconnection into AudioBridge — start timer on session creation, handle swap lifecycle in src/voice_server/bidi/agent.py
+- [x] T026 [US3] Implement reconnection timer — asyncio timer fires at reconnect_at, triggers swap logic in src/voice_server/bidi/reconnect.py
+- [x] T027 [US3] Implement hot-swap — create new BidiAgent in parallel, feed history as system context, swap input/output atomically in src/voice_server/bidi/reconnect.py
+- [x] T028 [US3] Implement history summarisation — when turns > window_size, summarise oldest turns into a paragraph in src/voice_server/bidi/history.py
+- [x] T029 [US3] Buffer user audio during RECONNECTING state — queue frames, flush to new session once ACTIVE in src/voice_server/bidi/input.py
+- [x] T030 [US3] Send voice_reconnecting/voice_reconnected control messages to client during swap in src/voice_server/bidi/reconnect.py
+- [x] T031 [US3] Wire reconnection into AudioBridge — start timer on session creation, handle swap lifecycle in src/voice_server/bidi/agent.py
 
 **Checkpoint**: Conversations survive past 8 minutes with no audible interruption
 
@@ -121,13 +121,13 @@
 
 ### Tests for User Story 4
 
-- [ ] T032 [P] [US4] Unit test for silence timeout detection and recovery state transition in tests/unit/test_connection.py
+- [x] T032 [P] [US4] Unit test for silence timeout detection and recovery state transition in tests/unit/test_connection.py
 
 ### Implementation for User Story 4
 
-- [ ] T033 [US4] Detect voice service disconnect (stream closed unexpectedly) and transition to recoverable state in src/voice_server/bidi/connection.py
-- [ ] T034 [US4] On user audio resumption after timeout, trigger reconnection with history replay (reuse reconnect.py logic) in src/voice_server/bidi/agent.py
-- [ ] T035 [US4] Send informational control message to client when silence timeout occurs and when recovery completes in src/voice_server/bidi/output.py
+- [x] T033 [US4] Detect voice service disconnect (stream closed unexpectedly) and transition to recoverable state in src/voice_server/bidi/connection.py
+- [x] T034 [US4] On user audio resumption after timeout, trigger reconnection with history replay (reuse reconnect.py logic) in src/voice_server/bidi/agent.py
+- [x] T035 [US4] Send informational control message to client when silence timeout occurs and when recovery completes in src/voice_server/bidi/output.py
 
 **Checkpoint**: Sessions survive extended silence periods and recover automatically
 
@@ -137,12 +137,12 @@
 
 **Purpose**: Observability, error retry, metrics, final hardening
 
-- [ ] T036 [P] Implement immediate retry logic (3 attempts, no delay) on voice service errors in src/voice_server/bidi/agent.py
-- [ ] T037 [P] Add CloudWatch metrics for reconnection count/duration, barge-in latency, audio round-trip time, errors by type in src/voice_server/observability/metrics.py
-- [ ] T038 [P] Add X-Ray trace spans for voice connection lifecycle (connect, stream, reconnect, disconnect) in src/voice_server/bidi/agent.py
-- [ ] T039 [P] Add structured log events for all voice connection state transitions in src/voice_server/bidi/connection.py
-- [ ] T040 Update pyproject.toml with strands-agents version pin and verify uv lock resolves
-- [ ] T041 Run quickstart.md validation — verify all commands work end-to-end with real Nova Sonic
+- [x] T036 [P] Implement immediate retry logic (3 attempts, no delay) on voice service errors in src/voice_server/bidi/agent.py
+- [x] T037 [P] Add CloudWatch metrics for reconnection count/duration, barge-in latency, audio round-trip time, errors by type in src/voice_server/observability/metrics.py
+- [x] T038 [P] Add X-Ray trace spans for voice connection lifecycle (connect, stream, reconnect, disconnect) in src/voice_server/bidi/agent.py
+- [x] T039 [P] Add structured log events for all voice connection state transitions in src/voice_server/bidi/connection.py
+- [x] T040 Update pyproject.toml with strands-agents version pin and verify uv lock resolves
+- [ ] T041 Run quickstart.md validation — verify all commands work end-to-end with real Nova Sonic (requires AWS Bedrock credentials)
 
 ---
 

@@ -2,6 +2,7 @@ import asyncio
 
 from fastapi import WebSocket, WebSocketDisconnect
 
+from voice_server.bidi.agent import AudioBridge
 from voice_server.models.codec import AudioCodec
 from voice_server.models.session import Session, SessionState
 from voice_server.observability.logging import get_logger
@@ -9,7 +10,6 @@ from voice_server.observability.metrics import (
     record_error,
     record_session_connect,
     record_session_disconnect,
-    record_session_timeout,
 )
 from voice_server.sessions.registry import registry
 from voice_server.ws.auth import extract_user_id
@@ -42,6 +42,7 @@ async def websocket_audio_endpoint(websocket: WebSocket) -> None:
     record_session_connect(session.id)
     logger.info("session_created", session_id=session.id, user_id=user_id)
 
+    bridge: AudioBridge | None = None
     try:
         codec = await _negotiate_codec(websocket, session)
         if codec is None:
@@ -53,13 +54,18 @@ async def websocket_audio_endpoint(websocket: WebSocket) -> None:
         await websocket.send_text(make_session_ready(session.id, user_id))
         logger.info("session_streaming", session_id=session.id)
 
-        await _stream_loop(websocket, session)
+        bridge = AudioBridge(session_id=session.id, ws=websocket)
+        await bridge.start()
+
+        await _stream_loop(websocket, session, bridge)
     except WebSocketDisconnect:
         logger.info("client_disconnected", session_id=session.id)
     except Exception as e:
         record_error(session.id, type(e).__name__)
         logger.error("session_error", session_id=session.id, error=str(e))
     finally:
+        if bridge:
+            await bridge.stop()
         session.transition_to(SessionState.DISCONNECTING)
         registry.remove(session.id)
         record_session_disconnect(session.id)
@@ -109,7 +115,9 @@ async def _negotiate_codec(websocket: WebSocket, session: Session) -> AudioCodec
     return codec
 
 
-async def _stream_loop(websocket: WebSocket, session: Session) -> None:
+async def _stream_loop(
+    websocket: WebSocket, session: Session, bridge: AudioBridge
+) -> None:
     while True:
         message = await websocket.receive()
         session.touch()
@@ -117,7 +125,7 @@ async def _stream_loop(websocket: WebSocket, session: Session) -> None:
         if "text" in message:
             await _handle_text_frame(websocket, session, message["text"])
         elif "bytes" in message:
-            _handle_binary_frame(session, message["bytes"])
+            await _handle_binary_frame(session, bridge, message["bytes"])
 
 
 async def _handle_text_frame(websocket: WebSocket, session: Session, raw: str) -> None:
@@ -134,6 +142,5 @@ async def _handle_text_frame(websocket: WebSocket, session: Session, raw: str) -
         await websocket.send_text(make_error(f"Unknown message type: {msg_type}", "INVALID_FRAME"))
 
 
-def _handle_binary_frame(session: Session, data: bytes) -> None:
-    # MVP: receive audio, update activity. Downstream BidiAgent forwarding is out of scope.
-    pass
+async def _handle_binary_frame(session: Session, bridge: AudioBridge, data: bytes) -> None:
+    await bridge.push_audio(data)
