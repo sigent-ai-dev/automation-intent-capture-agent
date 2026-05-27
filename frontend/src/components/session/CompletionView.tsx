@@ -1,3 +1,4 @@
+import Markdown from 'react-markdown';
 import { useSession } from '../../contexts/SessionContext';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 
@@ -41,11 +42,9 @@ export function CompletionView() {
 
         <div
           className="rounded-lg p-6 mb-4 prose prose-sm max-w-none"
-          style={{ backgroundColor: 'var(--color-surface)', border: `1px solid var(--color-border)` }}
+          style={{ backgroundColor: 'var(--color-surface)', border: `1px solid var(--color-border)`, color: 'var(--color-text-primary)' }}
         >
-          <pre className="whitespace-pre-wrap text-sm font-mono" style={{ color: 'var(--color-text-primary)' }}>
-            {result.intentMd}
-          </pre>
+          <Markdown>{result.intentMd}</Markdown>
         </div>
 
         <details className="mb-6">

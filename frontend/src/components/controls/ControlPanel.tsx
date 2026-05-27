@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from '../../contexts/SessionContext';
 import { useAudioCapture } from '../../hooks/useAudioCapture';
 import { useAudioPlayback } from '../../hooks/useAudioPlayback';
@@ -11,6 +11,7 @@ export function ControlPanel() {
   const { endSession } = useSession();
   const { feed, handleBargeIn } = useAudioPlayback();
   const [level, setLevel] = useState(0);
+  const isRecordingRef = useRef(false);
 
   const onAudioData = useCallback((buffer: ArrayBuffer) => {
     wsService.sendBinary(buffer);
@@ -25,18 +26,19 @@ export function ControlPanel() {
     onLevelChange,
   });
 
-  // Wire WebSocket transcript messages to conversation
-  // This would ideally be in a higher-level orchestrator, but for now
-  // we set up the binary handler here
-  wsService.setHandlers({
-    onBinary: (data) => {
-      if (isRecording) {
-        handleBargeIn();
-      } else {
-        feed(data);
-      }
-    },
-  });
+  isRecordingRef.current = isRecording;
+
+  useEffect(() => {
+    wsService.setHandlers({
+      onBinary: (data) => {
+        if (isRecordingRef.current) {
+          handleBargeIn();
+        } else {
+          feed(data);
+        }
+      },
+    });
+  }, [feed, handleBargeIn]);
 
   const showTextFallback = captureMode === 'unavailable';
 

@@ -18,6 +18,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState<SessionStatus>('idle');
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
 
   const updateProgress = useCallback((progress: SessionProgress) => {
     setSession((s) => (s ? { ...s, progress } : s));
@@ -56,7 +57,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           });
           break;
         case 'session_complete':
-          if (session?.id) handleComplete(session.id);
+          if (sessionIdRef.current) handleComplete(sessionIdRef.current);
           break;
         case 'error':
           setStatus('failed');
@@ -67,7 +68,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           break;
       }
     },
-    [session?.id, handleComplete, updateProgress],
+    [handleComplete, updateProgress],
   );
 
   const startSession = useCallback(async (projectName: string) => {
@@ -85,6 +86,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         error: null,
       };
       setSession(newSession);
+      sessionIdRef.current = resp.session_id;
       setStatus('connecting');
 
       wsService.setHandlers({

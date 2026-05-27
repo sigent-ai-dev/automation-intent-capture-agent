@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { sessionService } from './sessionService';
 
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
+(globalThis as any).fetch = mockFetch; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 beforeEach(() => {
   mockFetch.mockReset();
