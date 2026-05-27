@@ -1,0 +1,8 @@
+aws_region         = "eu-west-1"
+environment        = "dev"
+project_name       = "intent-capture"
+image_tag          = "latest"
+certificate_arn    = "arn:aws:acm:eu-west-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+vpc_id             = "vpc-0123456789abcdef0"
+public_subnet_ids  = ["subnet-0aaa", "subnet-0bbb"]
+private_subnet_ids = ["subnet-0ccc", "subnet-0ddd"]
