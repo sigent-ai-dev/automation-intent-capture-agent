@@ -79,3 +79,29 @@ resource "aws_iam_role_policy" "task_logs" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "task_dynamodb" {
+  name = "dynamodb-sessions"
+  role = aws_iam_role.task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Query",
+          "dynamodb:BatchWriteItem",
+        ]
+        Resource = [
+          aws_dynamodb_table.sessions.arn,
+          "${aws_dynamodb_table.sessions.arn}/index/*",
+        ]
+      }
+    ]
+  })
+}

@@ -38,8 +38,15 @@ class AudioBridge:
     def __init__(self, session_id: str, ws: WebSocketSender) -> None:
         self.session_id = session_id
         settings = get_settings()
+        history_persistence = None
+        if not settings.local_mode:
+            from voice_server.persistence.history_adapter import HistoryPersistenceAdapter
+
+            history_persistence = HistoryPersistenceAdapter(session_id=session_id)
         self.history = ConversationHistory(
-            session_id=session_id, window_size=settings.history_window_size
+            session_id=session_id,
+            window_size=settings.history_window_size,
+            persistence=history_persistence,
         )
         self.input = WebSocketBidiInput()
         self.output = WebSocketBidiOutput(ws=ws, history=self.history)

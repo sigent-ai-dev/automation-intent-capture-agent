@@ -9,6 +9,7 @@ from voice_server.capture.endpoints import router as capture_router
 from voice_server.health.endpoints import router as health_router
 from voice_server.observability.logging import configure_logging, get_logger
 from voice_server.sessions.cleanup import start_cleanup_task, stop_cleanup_task
+from voice_server.persistence.session_adapter import SessionPersistenceAdapter
 from voice_server.sessions.registry import registry
 from voice_server.ws.handler import websocket_audio_endpoint
 
@@ -32,6 +33,15 @@ async def _graceful_shutdown() -> None:
         return
     drain_seconds = settings.shutdown_drain_seconds
     logger.info("graceful_shutdown_started", drain_seconds=drain_seconds)
+
+    active_sessions = registry.all_sessions()
+    if active_sessions and registry._persistence:
+        failed = registry._persistence.drain_all(active_sessions)
+        if failed:
+            logger.warning("drain_persistence_failed", failed_count=len(failed))
+        else:
+            logger.info("all_sessions_persisted", count=len(active_sessions))
+
     for i in range(drain_seconds):
         if registry.active_count == 0:
             logger.info("all_sessions_drained")
@@ -44,6 +54,9 @@ async def _graceful_shutdown() -> None:
 async def lifespan(app: FastAPI):
     signal.signal(signal.SIGTERM, _signal_handler)
     signal.signal(signal.SIGINT, _signal_handler)
+    if not settings.local_mode:
+        registry._persistence = SessionPersistenceAdapter()
+        logger.info("dynamo_persistence_enabled", table=settings.dynamo_table_name)
     start_cleanup_task()
     logger.info("server_starting", port=settings.port, local_mode=settings.local_mode)
     yield

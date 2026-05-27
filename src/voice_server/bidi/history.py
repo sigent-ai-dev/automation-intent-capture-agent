@@ -1,5 +1,12 @@
+from __future__ import annotations
+
+import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from voice_server.persistence.history_adapter import HistoryPersistenceAdapter
 
 
 @dataclass
@@ -10,16 +17,24 @@ class Turn:
 
 
 class ConversationHistory:
-    def __init__(self, session_id: str, window_size: int = 10) -> None:
+    def __init__(
+        self,
+        session_id: str,
+        window_size: int = 10,
+        persistence: HistoryPersistenceAdapter | None = None,
+    ) -> None:
         self.session_id = session_id
         self.window_size = window_size
         self.turns: list[Turn] = []
         self.summary: str = ""
+        self._persistence = persistence
 
     def add_turn(self, role: str, text: str) -> None:
         self.turns.append(Turn(role=role, text=text))
         if len(self.turns) > self.window_size:
             self._summarise_overflow()
+        if self._persistence:
+            asyncio.create_task(self._persistence.save(self))
 
     def get_recent(self) -> list[Turn]:
         return self.turns[-self.window_size :]
