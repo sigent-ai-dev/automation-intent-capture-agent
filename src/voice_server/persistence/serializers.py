@@ -84,7 +84,9 @@ def item_to_history_data(item: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def elicitation_to_item(session_id: str, intent_id: str, populated: list[str], outstanding: list[str], status: str) -> dict[str, Any]:
+def elicitation_to_item(
+    session_id: str, intent_id: str, populated: list[str], outstanding: list[str], status: str
+) -> dict[str, Any]:
     settings = get_settings()
     expires_at = int(time.time()) + settings.session_ttl_seconds
     return {
@@ -104,6 +106,8 @@ def item_to_elicitation_data(item: dict[str, Any]) -> dict[str, Any]:
         "session_id": item["session_id"]["S"],
         "intent_id": item.get("intent_id", {}).get("S", ""),
         "populated_fields": [f["S"] for f in item.get("populated_fields", {}).get("L", [])],
-        "outstanding_clarifications": [c["S"] for c in item.get("outstanding_clarifications", {}).get("L", [])],
+        "outstanding_clarifications": [
+            c["S"] for c in item.get("outstanding_clarifications", {}).get("L", [])
+        ],
         "elicitation_status": item.get("elicitation_status", {}).get("S", "in_progress"),
     }
