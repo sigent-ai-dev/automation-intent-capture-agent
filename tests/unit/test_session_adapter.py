@@ -1,5 +1,5 @@
 import time
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -13,9 +13,6 @@ def adapter():
 
 @pytest.fixture
 def mock_session():
-    from datetime import datetime, timezone
-
-    from voice_server.models.codec import AudioCodec
     from voice_server.models.session import Session, SessionState
 
     s = Session(user_id="user-123")
