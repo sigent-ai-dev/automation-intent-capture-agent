@@ -1,8 +1,10 @@
 # WebSocket Protocol Contract
 
-**Endpoint**: `ws://{host}:{port}/ws/audio`  
+**Endpoint**: `ws://{host}:{port}/ws/audio?session_id={capture_session_id}`  
 **Subprotocol**: None (raw WebSocket)  
 **Frame types**: Text (JSON control messages) + Binary (PCM audio)
+
+The `session_id` query parameter associates the WebSocket connection with a capture session created via `POST /sessions`. This enables reconnection to the same session after a network drop.
 
 ---
 
@@ -57,6 +59,17 @@ Heartbeat sent every 30 seconds to keep connection alive.
 ```json
 {
   "type": "ping"
+}
+```
+
+### text_input
+
+Text fallback when microphone is unavailable. Server treats as equivalent to a transcribed user utterance.
+
+```json
+{
+  "type": "text_input",
+  "text": "I want to build a CLI tool that..."
 }
 ```
 

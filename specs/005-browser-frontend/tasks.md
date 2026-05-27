@@ -192,7 +192,7 @@
 - [ ] T071 [US5] Add reconnection UI: "Reconnecting..." toast in ConnectionStatus, counter of attempts
 - [ ] T072 [US5] Handle `server_shutdown` message: show banner "Server restarting...", auto-reconnect after drain_seconds
 - [ ] T073 [US5] Add `beforeunload` warning when session is active in useSession hook
-- [ ] T074 [US5] Wire TextInput: send text as JSON `{ type: "text_input", text }` via WebSocket (server treats as typed user utterance)
+- [ ] T074 [US5] Wire TextInput: send text as JSON `{ type: "text_input", text }` via WebSocket (NOTE: requires backend handler for `text_input` message type — add to ws/handler.py)
 
 **Checkpoint**: All error paths tested: mic denied → text works; disconnect → reconnects; server shutdown → graceful.
 

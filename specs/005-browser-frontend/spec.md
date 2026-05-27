@@ -168,7 +168,7 @@ IDLE → CREATING → CONNECTING → NEGOTIATING → ACTIVE → COMPLETING → C
 
 ```
 1. POST /sessions { project_name } → { session_id, join_url, status }
-2. WebSocket connect to: ws://{host}/ws/audio
+2. WebSocket connect to: ws://{host}/ws/audio?session_id={session_id}
 3. Send: { type: "codec_negotiate", codec: "pcm", sample_rate: 16000, bit_depth: 16, channels: 1 }
 4. Recv: { type: "codec_ack", session_id, codec, sample_rate, bit_depth, channels }
 5. Recv: { type: "session_ready", session_id, user_id, timestamp }
@@ -274,7 +274,7 @@ Identical behavior to trainline POC:
 Right sidebar (collapsible on mobile), shows:
 - **Sections checklist**: Context, Problem Statement, Constraints, Success Criteria, Stakeholders, Timeline — each with ✓/○ icon
 - **Proposal rounds**: Counter (e.g., "Round 2 of 3")
-- **Alignment meter**: Progress bar (0-100%) showing agent confidence that intent is fully captured
+- **Alignment meter**: Progress bar showing section completion percentage (sections_covered.length / total_sections * 100). When `alignment_reached` = true, bar shows 100% with "Complete" styling.
 - **Status badge**: "Eliciting" / "Proposing" / "Aligning" / "Complete"
 
 Updates in real-time from `progress` WebSocket messages.
@@ -468,7 +468,8 @@ frontend/
 
 | Metric | Target |
 |--------|--------|
-| Audio round-trip latency (user stops → agent plays) | < 2 seconds |
+| Audio round-trip latency (user stops → agent plays) | < 2 seconds (includes server inference time) |
+| Barge-in response (user speaks → agent playback stops) | < 800ms (frontend-only, per constitution) |
 | UI frame rate during audio streaming | 60fps (no jank from audio processing — AudioWorklet ensures this) |
 | WebSocket reconnect time | < 5 seconds (first attempt at 1s) |
 | Bundle size (gzipped) | < 200KB (excluding audio worklet) |
