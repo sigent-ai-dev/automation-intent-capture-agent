@@ -37,3 +37,13 @@ output "log_group_name" {
   description = "CloudWatch log group name"
   value       = aws_cloudwatch_log_group.voice_server.name
 }
+
+output "dynamodb_table_name" {
+  description = "DynamoDB sessions table name"
+  value       = aws_dynamodb_table.sessions.name
+}
+
+output "dynamodb_table_arn" {
+  description = "DynamoDB sessions table ARN"
+  value       = aws_dynamodb_table.sessions.arn
+}

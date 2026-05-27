@@ -73,3 +73,38 @@ def record_intent_finalised(intent_id: str, sections_populated: int) -> None:
         intent_id=intent_id,
         sections_populated=sections_populated,
     )
+
+
+def record_persistence_write(session_id: str, record_type: str, latency_ms: float) -> None:
+    logger.info(
+        "metric_persistence_write",
+        session_id=session_id,
+        record_type=record_type,
+        latency_ms=round(latency_ms, 1),
+    )
+
+
+def record_persistence_read(session_id: str, record_type: str, latency_ms: float) -> None:
+    logger.info(
+        "metric_persistence_read",
+        session_id=session_id,
+        record_type=record_type,
+        latency_ms=round(latency_ms, 1),
+    )
+
+
+def record_persistence_failure(session_id: str, operation: str, error_type: str) -> None:
+    logger.info(
+        "metric_persistence_failure",
+        session_id=session_id,
+        operation=operation,
+        error_type=error_type,
+    )
+
+
+def record_drain_result(total_sessions: int, failed_count: int) -> None:
+    logger.info(
+        "metric_drain_result",
+        total_sessions=total_sessions,
+        failed_count=failed_count,
+    )
