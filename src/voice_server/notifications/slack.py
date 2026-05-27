@@ -83,7 +83,10 @@ def _format_intent_notification(event: IntentFinalised, channel: str) -> dict:
             {
                 "type": "context",
                 "elements": [
-                    {"type": "mrkdwn", "text": f"_Document too long for inline display. See `.intent/{event.intent_id}.md`_"}
+                    {
+                        "type": "mrkdwn",
+                        "text": f"_Document too long for inline display. See `.intent/{event.intent_id}.md`_",
+                    }
                 ],
             }
         )
@@ -91,9 +94,7 @@ def _format_intent_notification(event: IntentFinalised, channel: str) -> dict:
     blocks.append(
         {
             "type": "context",
-            "elements": [
-                {"type": "mrkdwn", "text": f"Populated: {fields_str}"}
-            ],
+            "elements": [{"type": "mrkdwn", "text": f"Populated: {fields_str}"}],
         }
     )
 

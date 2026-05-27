@@ -42,12 +42,8 @@ class Settings:
     session_ttl_seconds: int = field(
         default_factory=lambda: int(os.environ.get("SESSION_TTL_SECONDS", "86400"))
     )
-    slack_webhook_url: str = field(
-        default_factory=lambda: os.environ.get("SLACK_WEBHOOK_URL", "")
-    )
-    slack_channel: str = field(
-        default_factory=lambda: os.environ.get("SLACK_CHANNEL", "")
-    )
+    slack_webhook_url: str = field(default_factory=lambda: os.environ.get("SLACK_WEBHOOK_URL", ""))
+    slack_channel: str = field(default_factory=lambda: os.environ.get("SLACK_CHANNEL", ""))
     slack_enabled: bool = field(
         default_factory=lambda: os.environ.get("SLACK_ENABLED", "true").lower() == "true"
     )
