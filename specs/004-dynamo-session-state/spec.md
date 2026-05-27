@@ -89,15 +89,16 @@ Stale sessions (no activity for a configurable period) are automatically removed
 - **FR-001**: System MUST persist session state (connection metadata, session ID, user ID, timestamps) to durable storage on every significant state change
 - **FR-002**: System MUST persist conversation history (turns + summary) to durable storage after each completed turn
 - **FR-003**: System MUST persist elicitation progress (populated fields, outstanding clarifications, confirmation status) after each tool invocation
-- **FR-004**: System MUST load session state on reconnection and restore the session to its previous state within 2 seconds
-- **FR-005**: System MUST persist all active sessions during graceful shutdown (SIGTERM handling) before the container exits
+- **FR-004**: System MUST load session state on reconnection using strongly consistent reads and restore the session to its previous state within 2 seconds
+- **FR-005**: System MUST persist all active sessions during graceful shutdown (SIGTERM handling), retrying for the full drain window duration; if storage remains unavailable, log which sessions could not be persisted and exit gracefully
 - **FR-006**: System MUST automatically expire stale sessions after a configurable timeout (default: 24 hours of inactivity)
 - **FR-007**: System MUST refresh session expiry on every interaction (TTL reset)
 - **FR-008**: System MUST support looking up a session by its ID (primary access pattern)
-- **FR-009**: System MUST support listing all active sessions (for admin/monitoring purposes)
+- **FR-009**: System MUST support listing all active sessions using eventually consistent reads (for admin/monitoring purposes)
 - **FR-010**: System MUST support retrieving conversation history by session ID
 - **FR-011**: System MUST handle storage unavailability gracefully — continue operating with in-memory state and retry persistence when available
-- **FR-012**: System MUST integrate with existing SessionRegistry, ConversationHistory, and elicitation storage modules without breaking their current interfaces
+- **FR-012**: System MUST integrate with existing SessionRegistry, ConversationHistory, and elicitation storage modules via write-through adapters — in-memory state stays hot for performance, durable storage is the async backup
+- **FR-013**: System MUST use a single-table design with composite key (PK=session_id, SK=record_type) for all session-related data
 
 ### Key Entities
 
@@ -115,6 +116,15 @@ Stale sessions (no activity for a configurable period) are automatically removed
 - **SC-004**: System operates normally when persistent storage is temporarily unavailable (degrades to in-memory, recovers when storage returns)
 - **SC-005**: Conversation history survives process crashes — at most 1 turn of history lost (the turn in progress at crash time)
 - **SC-006**: Storage operations add less than 50ms latency to request handling (async writes, not blocking the audio stream)
+
+## Clarifications
+
+### Session 2026-05-27
+
+- Q: Single table or multiple tables for DynamoDB? → A: Single table with composite key (PK=session_id, SK=record_type#timestamp).
+- Q: Read consistency model for session resume vs listings? → A: Strong consistency for session resume; eventual consistency for admin listings.
+- Q: How does persistence integrate with existing modules? → A: Write-through adapter — in-memory stays hot, DynamoDB is async backup.
+- Q: Behaviour on DynamoDB unavailability during shutdown drain? → A: Retry for drain window duration, log failures, exit gracefully.
 
 ## Assumptions
 
