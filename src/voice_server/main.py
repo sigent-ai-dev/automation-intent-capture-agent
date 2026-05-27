@@ -9,6 +9,7 @@ from voice_server.capture.endpoints import router as capture_router
 from voice_server.health.endpoints import router as health_router
 from voice_server.observability.logging import configure_logging, get_logger
 from voice_server.sessions.cleanup import start_cleanup_task, stop_cleanup_task
+from voice_server.persistence.session_adapter import SessionPersistenceAdapter
 from voice_server.sessions.registry import registry
 from voice_server.ws.handler import websocket_audio_endpoint
 
@@ -53,6 +54,9 @@ async def _graceful_shutdown() -> None:
 async def lifespan(app: FastAPI):
     signal.signal(signal.SIGTERM, _signal_handler)
     signal.signal(signal.SIGINT, _signal_handler)
+    if not settings.local_mode:
+        registry._persistence = SessionPersistenceAdapter()
+        logger.info("dynamo_persistence_enabled", table=settings.dynamo_table_name)
     start_cleanup_task()
     logger.info("server_starting", port=settings.port, local_mode=settings.local_mode)
     yield
