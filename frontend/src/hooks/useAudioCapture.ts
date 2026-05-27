@@ -48,7 +48,7 @@ export function useAudioCapture({ onAudioData, onLevelChange }: UseAudioCaptureO
         scriptNode.onaudioprocess = (e) => {
           const float32 = e.inputBuffer.getChannelData(0);
           const int16 = float32ToInt16(float32);
-          onAudioData(int16.buffer);
+          onAudioData(int16.buffer as ArrayBuffer);
           onLevelChange(computeLevel(float32));
         };
         source.connect(scriptNode);

@@ -3,7 +3,7 @@ import PCMPlayer from 'pcm-player';
 import { CONFIG } from '../config/constants';
 
 export function useAudioPlayback() {
-  const playerRef = useRef<PCMPlayer | null>(null);
+  const playerRef = useRef<InstanceType<typeof PCMPlayer> | null>(null);
 
   const getPlayer = useCallback(() => {
     if (!playerRef.current) {
@@ -12,13 +12,13 @@ export function useAudioPlayback() {
         channels: 1,
         sampleRate: CONFIG.OUTPUT_SAMPLE_RATE,
         flushTime: 100,
-      });
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     }
     return playerRef.current;
   }, []);
 
   const feed = useCallback((data: ArrayBuffer) => {
-    getPlayer().feed(new Uint8Array(data));
+    (getPlayer() as any).feed(data); // eslint-disable-line @typescript-eslint/no-explicit-any
   }, [getPlayer]);
 
   const stop = useCallback(() => {

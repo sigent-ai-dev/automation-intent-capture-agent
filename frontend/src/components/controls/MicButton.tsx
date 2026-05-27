@@ -1,20 +1,22 @@
-import { useState } from 'react';
+interface Props {
+  isRecording: boolean;
+  onToggle: () => void;
+  disabled: boolean;
+}
 
-export function MicButton() {
-  const [isRecording, setIsRecording] = useState(false);
-
-  const toggle = () => {
-    setIsRecording((r) => !r);
-    // TODO: Wire to useAudioCapture hook
-  };
-
+export function MicButton({ isRecording, onToggle, disabled }: Props) {
   return (
     <button
       className="relative w-14 h-14 rounded-full flex items-center justify-center transition-colors"
       style={{
-        backgroundColor: isRecording ? 'var(--color-mic-active)' : 'var(--color-mic-inactive)',
+        backgroundColor: disabled
+          ? 'var(--color-border)'
+          : isRecording
+            ? 'var(--color-mic-active)'
+            : 'var(--color-mic-inactive)',
       }}
-      onClick={toggle}
+      onClick={onToggle}
+      disabled={disabled}
       aria-label={isRecording ? 'Stop recording' : 'Start recording'}
     >
       {isRecording && (

@@ -7,9 +7,11 @@ import { Header } from './components/layout/Header';
 import { LandingView } from './components/session/LandingView';
 import { ActiveSessionView } from './components/session/ActiveSessionView';
 import { CompletionView } from './components/session/CompletionView';
+import { useBeforeUnload } from './hooks/useBeforeUnload';
 
 function AppContent() {
   const { status } = useSession();
+  useBeforeUnload(status === 'active' || status === 'completing');
 
   const renderContent = () => {
     switch (status) {
