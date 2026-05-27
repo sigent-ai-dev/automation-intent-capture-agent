@@ -19,18 +19,15 @@ logger = get_logger(__name__)
 
 class SessionPersistenceAdapter:
     def __init__(self) -> None:
-        self._available = True
+        pass
 
     async def save(self, session) -> None:
-        if not self._available:
-            return
         item = session_to_item(session)
         success = await put_item(item)
         if not success:
             success = await put_item(item)
         if not success:
             logger.warning("session_persist_failed", session_id=session.id)
-            self._available = False
 
     async def load(self, session_id: str) -> dict[str, Any] | None:
         key = {"session_id": {"S": session_id}, "record_type": {"S": "SESSION"}}

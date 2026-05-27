@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import Any
 
 import aiobotocore.session
@@ -21,7 +22,7 @@ def _get_session() -> aiobotocore.session.AioSession:
 
 def _client_kwargs() -> dict[str, Any]:
     settings = get_settings()
-    kwargs: dict[str, Any] = {"region_name": "us-east-1"}
+    kwargs: dict[str, Any] = {"region_name": os.environ.get("AWS_REGION", "us-east-1")}
     if settings.dynamo_endpoint_url:
         kwargs["endpoint_url"] = settings.dynamo_endpoint_url
     return kwargs
@@ -107,7 +108,7 @@ def batch_write_sync(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     import boto3
 
     settings = get_settings()
-    kwargs: dict[str, Any] = {"region_name": "us-east-1"}
+    kwargs: dict[str, Any] = {"region_name": os.environ.get("AWS_REGION", "us-east-1")}
     if settings.dynamo_endpoint_url:
         kwargs["endpoint_url"] = settings.dynamo_endpoint_url
 
