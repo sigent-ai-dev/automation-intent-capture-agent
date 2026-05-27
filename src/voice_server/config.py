@@ -31,6 +31,7 @@ class Settings:
     max_voice_retries: int = field(
         default_factory=lambda: int(os.environ.get("MAX_VOICE_RETRIES", "3"))
     )
+    public_url: str = field(default_factory=lambda: os.environ.get("PUBLIC_URL", ""))
 
 
 def get_settings() -> Settings:

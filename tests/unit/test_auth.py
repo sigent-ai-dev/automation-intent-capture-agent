@@ -6,8 +6,10 @@ def test_extract_user_id_from_alb_header(monkeypatch):
     from importlib import reload
 
     import voice_server.config
+
     reload(voice_server.config)
     import voice_server.ws.auth
+
     reload(voice_server.ws.auth)
 
     ws = MagicMock()
@@ -21,8 +23,10 @@ def test_extract_user_id_missing_header(monkeypatch):
     from importlib import reload
 
     import voice_server.config
+
     reload(voice_server.config)
     import voice_server.ws.auth
+
     reload(voice_server.ws.auth)
 
     ws = MagicMock()
@@ -36,8 +40,10 @@ def test_extract_user_id_local_mode(monkeypatch):
     from importlib import reload
 
     import voice_server.config
+
     reload(voice_server.config)
     import voice_server.ws.auth
+
     reload(voice_server.ws.auth)
 
     ws = MagicMock()

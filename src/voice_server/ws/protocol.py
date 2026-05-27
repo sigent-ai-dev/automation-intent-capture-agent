@@ -29,14 +29,16 @@ def codec_from_message(msg: dict[str, Any]) -> AudioCodec:
 
 
 def make_codec_ack(session_id: str, codec: AudioCodec) -> str:
-    return json.dumps({
-        "type": "codec_ack",
-        "session_id": session_id,
-        "codec": codec.format,
-        "sample_rate": codec.sample_rate,
-        "bit_depth": codec.bit_depth,
-        "channels": codec.channels,
-    })
+    return json.dumps(
+        {
+            "type": "codec_ack",
+            "session_id": session_id,
+            "codec": codec.format,
+            "sample_rate": codec.sample_rate,
+            "bit_depth": codec.bit_depth,
+            "channels": codec.channels,
+        }
+    )
 
 
 def make_codec_reject(reason: str) -> str:
@@ -44,12 +46,14 @@ def make_codec_reject(reason: str) -> str:
 
 
 def make_session_ready(session_id: str, user_id: str) -> str:
-    return json.dumps({
-        "type": "session_ready",
-        "session_id": session_id,
-        "user_id": user_id,
-        "timestamp": int(time.time() * 1000),
-    })
+    return json.dumps(
+        {
+            "type": "session_ready",
+            "session_id": session_id,
+            "user_id": user_id,
+            "timestamp": int(time.time() * 1000),
+        }
+    )
 
 
 def make_pong() -> str:
@@ -61,8 +65,10 @@ def make_error(message: str, code: str = "INTERNAL_ERROR") -> str:
 
 
 def make_server_shutdown(drain_seconds: int) -> str:
-    return json.dumps({
-        "type": "server_shutdown",
-        "drain_seconds": drain_seconds,
-        "message": "Server is shutting down for deployment",
-    })
+    return json.dumps(
+        {
+            "type": "server_shutdown",
+            "drain_seconds": drain_seconds,
+            "message": "Server is shutting down for deployment",
+        }
+    )
