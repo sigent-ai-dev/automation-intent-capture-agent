@@ -32,6 +32,15 @@ async def _graceful_shutdown() -> None:
         return
     drain_seconds = settings.shutdown_drain_seconds
     logger.info("graceful_shutdown_started", drain_seconds=drain_seconds)
+
+    active_sessions = registry.all_sessions()
+    if active_sessions and registry._persistence:
+        failed = registry._persistence.drain_all(active_sessions)
+        if failed:
+            logger.warning("drain_persistence_failed", failed_count=len(failed))
+        else:
+            logger.info("all_sessions_persisted", count=len(active_sessions))
+
     for i in range(drain_seconds):
         if registry.active_count == 0:
             logger.info("all_sessions_drained")
