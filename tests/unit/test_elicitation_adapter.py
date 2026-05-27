@@ -12,7 +12,9 @@ def adapter():
 
 
 async def test_save_calls_put_item(adapter):
-    with patch("voice_server.persistence.elicitation_adapter.put_item", new_callable=AsyncMock) as mock_put:
+    with patch(
+        "voice_server.persistence.elicitation_adapter.put_item", new_callable=AsyncMock
+    ) as mock_put:
         mock_put.return_value = True
         await adapter.save(
             intent_id="INT-001",
@@ -24,7 +26,9 @@ async def test_save_calls_put_item(adapter):
 
 
 async def test_save_retries_on_failure(adapter):
-    with patch("voice_server.persistence.elicitation_adapter.put_item", new_callable=AsyncMock) as mock_put:
+    with patch(
+        "voice_server.persistence.elicitation_adapter.put_item", new_callable=AsyncMock
+    ) as mock_put:
         mock_put.side_effect = [False, True]
         await adapter.save(
             intent_id="INT-001",
@@ -47,7 +51,9 @@ async def test_load_returns_data(adapter):
         "updated_at": {"S": "2026-05-27T10:00:00+00:00"},
         "expires_at": {"N": str(now + 86400)},
     }
-    with patch("voice_server.persistence.elicitation_adapter.get_item", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "voice_server.persistence.elicitation_adapter.get_item", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = item
         data = await adapter.load()
         assert data is not None
@@ -66,14 +72,18 @@ async def test_load_returns_none_when_expired(adapter):
         "elicitation_status": {"S": "in_progress"},
         "expires_at": {"N": "1000000"},
     }
-    with patch("voice_server.persistence.elicitation_adapter.get_item", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "voice_server.persistence.elicitation_adapter.get_item", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = item
         data = await adapter.load()
         assert data is None
 
 
 async def test_load_returns_none_when_not_found(adapter):
-    with patch("voice_server.persistence.elicitation_adapter.get_item", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "voice_server.persistence.elicitation_adapter.get_item", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = None
         data = await adapter.load()
         assert data is None
