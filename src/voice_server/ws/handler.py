@@ -115,9 +115,7 @@ async def _negotiate_codec(websocket: WebSocket, session: Session) -> AudioCodec
     return codec
 
 
-async def _stream_loop(
-    websocket: WebSocket, session: Session, bridge: AudioBridge
-) -> None:
+async def _stream_loop(websocket: WebSocket, session: Session, bridge: AudioBridge) -> None:
     while True:
         message = await websocket.receive()
         session.touch()
