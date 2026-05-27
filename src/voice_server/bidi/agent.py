@@ -129,13 +129,11 @@ class AudioBridge:
         from voice_server.notifications import notify
         from voice_server.notifications.events import ErrorOccurred
 
-        asyncio.create_task(
-            notify(
-                ErrorOccurred(
-                    error_type="VOICE_SERVICE_UNAVAILABLE",
-                    session_id=self.session_id,
-                    description="All retry attempts exhausted. User notified.",
-                )
+        await notify(
+            ErrorOccurred(
+                error_type="VOICE_SERVICE_UNAVAILABLE",
+                session_id=self.session_id,
+                description="All retry attempts exhausted. User notified.",
             )
         )
 

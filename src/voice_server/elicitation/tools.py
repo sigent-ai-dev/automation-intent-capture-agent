@@ -215,19 +215,23 @@ def finalise_intent(intent_id: str) -> dict:
     from voice_server.notifications import notify
     from voice_server.notifications.events import IntentFinalised
 
-    asyncio.create_task(
-        notify(
-            IntentFinalised(
-                intent_id=intent_id,
-                project_name=doc.project_name,
-                intent_summary=doc.intent,
-                actor=doc.actor,
-                populated_fields=doc.populated_sections(),
-                open_clarifications=len(doc.clarifications),
-                full_content=doc.render(),
+    try:
+        loop = asyncio.get_running_loop()
+        loop.create_task(
+            notify(
+                IntentFinalised(
+                    intent_id=intent_id,
+                    project_name=doc.project_name,
+                    intent_summary=doc.intent,
+                    actor=doc.actor,
+                    populated_fields=doc.populated_sections(),
+                    open_clarifications=len(doc.clarifications),
+                    full_content=doc.render(),
+                )
             )
         )
-    )
+    except RuntimeError:
+        pass
 
     return {
         "status": "success",
