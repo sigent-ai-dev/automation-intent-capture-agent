@@ -150,7 +150,7 @@
 
 **Purpose**: E2E testing, security hardening, documentation
 
-- [ ] T043 [P] Write E2E test: unauthenticated user sees login, signs in, starts session in frontend/tests/e2e/auth-flow.spec.ts
+- [ ] T043 [P] Write E2E test: unauthenticated user is redirected to login, signs in, starts session in frontend/tests/e2e/auth-flow.spec.ts (verify URL redirect + login form visibility before auth)
 - [ ] T044 [P] Add startup warning log when LOCAL_MODE=true in src/voice_server/main.py
 - [ ] T045 Verify ECS task definition does NOT set LOCAL_MODE in terraform/modules/voice-service/ecs.tf
 - [ ] T046 [P] Update frontend public/config.js with COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID placeholders

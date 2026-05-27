@@ -63,7 +63,7 @@ AWS WAF sits in front of the ALB to protect against abuse: rate limiting per IP,
 
 ### User Story 4 — User Registration & Password Management (Priority: P3)
 
-New users can self-register with email verification. Existing users can reset their password. All flows use Cognito hosted UI or Amplify components.
+New users can self-register with email verification. Existing users can reset their password. All flows use Amplify custom components (matching the existing design system).
 
 **Why this priority**: Secondary to the core auth flow — initial deployment may use admin-created accounts. Self-service registration adds convenience.
 
@@ -124,7 +124,7 @@ New users can self-register with email verification. Existing users can reset th
 - Users have email addresses and can receive verification emails
 - Initial deployment uses email/password auth only (no SSO/SAML — explicitly out of scope per issue #10)
 - The ALB already exists (from issue #6 Terraform) — WAF attaches to it
-- Cognito hosted UI is acceptable for MVP (custom UI can be added later)
+- Amplify custom forms used (not Cognito hosted UI) to maintain design system consistency
 - All authenticated users have equal permissions (no role-based access)
 - WebSocket token validation happens at connection time only (not per-message)
 - The `LOCAL_MODE=true` flag bypasses auth for local development
