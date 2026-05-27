@@ -32,6 +32,7 @@ class Settings:
         default_factory=lambda: int(os.environ.get("MAX_VOICE_RETRIES", "3"))
     )
     public_url: str = field(default_factory=lambda: os.environ.get("PUBLIC_URL", ""))
+    intent_dir: str = field(default_factory=lambda: os.environ.get("INTENT_DIR", ".intent"))
 
 
 def get_settings() -> Settings:
