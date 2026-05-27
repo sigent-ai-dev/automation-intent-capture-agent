@@ -1,5 +1,4 @@
 import time
-from unittest.mock import patch
 
 from voice_server.notifications.rate_limiter import RateLimiter
 

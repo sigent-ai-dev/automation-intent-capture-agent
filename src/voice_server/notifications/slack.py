@@ -109,7 +109,7 @@ def _format_error_notification(event: ErrorOccurred, channel: str) -> dict:
     blocks = [
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": f"⚠️ Voice Service Error"},
+            "text": {"type": "plain_text", "text": "⚠️ Voice Service Error"},
         },
         {
             "type": "section",
