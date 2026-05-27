@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import TYPE_CHECKING
 
 from strands.experimental.bidi import BidiAgent
 from strands.experimental.bidi.models.nova_sonic import BidiNovaSonicModel
@@ -13,9 +12,6 @@ from voice_server.bidi.output import WebSocketBidiOutput, WebSocketSender
 from voice_server.bidi.reconnect import ReconnectionManager
 from voice_server.config import get_settings
 from voice_server.observability.logging import get_logger
-
-if TYPE_CHECKING:
-    pass
 
 logger = get_logger(__name__)
 
@@ -42,6 +38,7 @@ class AudioBridge:
         self._agent_task: asyncio.Task | None = None
         self._reconnection: ReconnectionManager | None = None
         self._max_retries = settings.max_voice_retries
+        self._retrying = False
 
     async def start(self) -> None:
         settings = get_settings()
@@ -71,9 +68,11 @@ class AudioBridge:
             pass
         except Exception as e:
             logger.error("bidi_agent_error", session_id=self.session_id, error=str(e))
-            await self._handle_agent_error(e)
+            if not self._retrying:
+                await self._handle_agent_error(e)
 
     async def _handle_agent_error(self, error: Exception) -> None:
+        self._retrying = True
         for attempt in range(1, self._max_retries + 1):
             logger.info(
                 "bidi_agent_retry",
@@ -89,6 +88,7 @@ class AudioBridge:
                     f"Conversation so far:\n{history_context}"
                 )
                 self._agent = create_bidi_agent(system_prompt=system_prompt)
+                self._retrying = False
                 self._agent_task = asyncio.create_task(self._run_agent())
                 return
             except Exception as retry_error:
