@@ -57,6 +57,12 @@ async def lifespan(app: FastAPI):
     if not settings.local_mode:
         registry._persistence = SessionPersistenceAdapter()
         logger.info("dynamo_persistence_enabled", table=settings.dynamo_table_name)
+    if settings.slack_webhook_url and settings.slack_enabled:
+        from voice_server.notifications import register_adapter
+        from voice_server.notifications.slack import SlackNotificationAdapter
+
+        register_adapter(SlackNotificationAdapter())
+        logger.info("slack_notifications_enabled")
     start_cleanup_task()
     logger.info("server_starting", port=settings.port, local_mode=settings.local_mode)
     yield
