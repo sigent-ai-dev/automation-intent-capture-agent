@@ -33,6 +33,15 @@ class Settings:
     )
     public_url: str = field(default_factory=lambda: os.environ.get("PUBLIC_URL", ""))
     intent_dir: str = field(default_factory=lambda: os.environ.get("INTENT_DIR", ".intent"))
+    dynamo_table_name: str = field(
+        default_factory=lambda: os.environ.get("DYNAMO_TABLE_NAME", "intent-capture-sessions")
+    )
+    dynamo_endpoint_url: str = field(
+        default_factory=lambda: os.environ.get("DYNAMO_ENDPOINT_URL", "")
+    )
+    session_ttl_seconds: int = field(
+        default_factory=lambda: int(os.environ.get("SESSION_TTL_SECONDS", "86400"))
+    )
 
 
 def get_settings() -> Settings:
