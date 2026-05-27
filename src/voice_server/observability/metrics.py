@@ -61,3 +61,15 @@ def record_voice_error(session_id: str, error_type: str) -> None:
         session_id=session_id,
         error_type=error_type,
     )
+
+
+def record_intent_created(intent_id: str) -> None:
+    logger.info("metric_intent_created", intent_id=intent_id)
+
+
+def record_intent_finalised(intent_id: str, sections_populated: int) -> None:
+    logger.info(
+        "metric_intent_finalised",
+        intent_id=intent_id,
+        sections_populated=sections_populated,
+    )

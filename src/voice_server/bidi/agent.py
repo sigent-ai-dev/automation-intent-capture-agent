@@ -16,10 +16,22 @@ from voice_server.observability.logging import get_logger
 logger = get_logger(__name__)
 
 
-def create_bidi_agent(system_prompt: str | None = None) -> BidiAgent:
+def create_bidi_agent(
+    system_prompt: str | None = None, tools: list | None = None
+) -> BidiAgent:
     settings = get_settings()
     model = BidiNovaSonicModel(model_id=settings.nova_sonic_model_id)
-    return BidiAgent(model=model, system_prompt=system_prompt)
+    from voice_server.elicitation.tools import (
+        create_intent,
+        finalise_intent,
+        read_intent,
+        update_intent_section,
+    )
+
+    all_tools = [create_intent, update_intent_section, read_intent, finalise_intent]
+    if tools:
+        all_tools.extend(tools)
+    return BidiAgent(model=model, system_prompt=system_prompt, tools=all_tools)
 
 
 class AudioBridge:
@@ -41,12 +53,21 @@ class AudioBridge:
         self._retrying = False
 
     async def start(self) -> None:
+        from voice_server.elicitation.prompts import build_system_prompt
+        from voice_server.elicitation.storage import find_draft_intents, load_intent
+        from voice_server.elicitation.prompts import build_resume_context
+
         settings = get_settings()
         self._trace_subsegment("voice_connection.start")
-        system_prompt = (
-            "You are a helpful voice assistant for capturing business intent. "
-            "Listen carefully and respond concisely."
-        )
+
+        resume_context = None
+        drafts = find_draft_intents()
+        if drafts:
+            doc = load_intent(drafts[-1])
+            if doc:
+                resume_context = build_resume_context(doc)
+
+        system_prompt = build_system_prompt(resume_context=resume_context)
         self._agent = create_bidi_agent(system_prompt=system_prompt)
         self._agent_task = asyncio.create_task(self._run_agent())
         self._reconnection = ReconnectionManager(

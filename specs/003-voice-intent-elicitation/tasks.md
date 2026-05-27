@@ -20,8 +20,8 @@
 
 **Purpose**: Create package structure and add configuration for elicitation
 
-- [ ] T001 Create package structure: src/voice_server/elicitation/__init__.py
-- [ ] T002 [P] Add INTENT_DIR environment variable to src/voice_server/config.py (default: ".intent")
+- [x] T001 Create package structure: src/voice_server/elicitation/__init__.py
+- [x] T002 [P] Add INTENT_DIR environment variable to src/voice_server/config.py (default: ".intent")
 
 ---
 
@@ -31,10 +31,10 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Implement IntentDocument dataclass (parse/render intent-kit markdown format) in src/voice_server/elicitation/intent_doc.py
-- [ ] T004 [P] Implement filesystem storage (create .intent/ dir, scan for next ID, atomic write via temp+rename, read by ID) in src/voice_server/elicitation/storage.py
-- [ ] T005 [P] Implement elicitation system prompt (role, behaviour, tool usage, completion instructions) in src/voice_server/elicitation/prompts.py
-- [ ] T006 Define Strands @tool functions (create_intent, update_intent_section, read_intent, finalise_intent) with docstrings and type hints in src/voice_server/elicitation/tools.py
+- [x] T003 [P] Implement IntentDocument dataclass (parse/render intent-kit markdown format) in src/voice_server/elicitation/intent_doc.py
+- [x] T004 [P] Implement filesystem storage (create .intent/ dir, scan for next ID, atomic write via temp+rename, read by ID) in src/voice_server/elicitation/storage.py
+- [x] T005 [P] Implement elicitation system prompt (role, behaviour, tool usage, completion instructions) in src/voice_server/elicitation/prompts.py
+- [x] T006 Define Strands @tool functions (create_intent, update_intent_section, read_intent, finalise_intent) with docstrings and type hints in src/voice_server/elicitation/tools.py
 
 **Checkpoint**: Foundation ready — tools exist, document model parses/renders, storage reads/writes
 
@@ -48,19 +48,19 @@
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Unit test for IntentDocument parse/render (round-trip, missing sections, frontmatter) in tests/unit/test_intent_doc.py
-- [ ] T008 [P] [US1] Unit test for storage (create dir, next ID scan, atomic write, read by ID) in tests/unit/test_storage.py
-- [ ] T009 [P] [US1] Unit test for tool functions (create_intent happy path, validation errors, update_intent_section append/replace, read_intent, finalise_intent) in tests/unit/test_elicitation_tools.py
+- [x] T007 [P] [US1] Unit test for IntentDocument parse/render (round-trip, missing sections, frontmatter) in tests/unit/test_intent_doc.py
+- [x] T008 [P] [US1] Unit test for storage (create dir, next ID scan, atomic write, read by ID) in tests/unit/test_storage.py
+- [x] T009 [P] [US1] Unit test for tool functions (create_intent happy path, validation errors, update_intent_section append/replace, read_intent, finalise_intent) in tests/unit/test_elicitation_tools.py
 - [ ] T010 [P] [US1] Integration test for elicitation flow (mock BidiAgent invokes tools in sequence, produces valid document) in tests/integration/test_elicitation_flow.py
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Implement create_intent tool — validate inputs, call storage.create(), return intent_id and path in src/voice_server/elicitation/tools.py
-- [ ] T012 [US1] Implement update_intent_section tool — load doc, replace/append section, save in src/voice_server/elicitation/tools.py
-- [ ] T013 [US1] Implement read_intent tool — load doc, return content + populated/empty section lists in src/voice_server/elicitation/tools.py
-- [ ] T014 [US1] Implement finalise_intent tool — validate mandatory fields, set Status: confirmed, save in src/voice_server/elicitation/tools.py
-- [ ] T015 [US1] Register elicitation tools in BidiAgent — modify create_bidi_agent() to accept and include tools in src/voice_server/bidi/agent.py
-- [ ] T016 [US1] Wire elicitation system prompt into AudioBridge.start() — prepend elicitation instructions to system prompt in src/voice_server/bidi/agent.py
+- [x] T011 [US1] Implement create_intent tool — validate inputs, call storage.create(), return intent_id and path in src/voice_server/elicitation/tools.py
+- [x] T012 [US1] Implement update_intent_section tool — load doc, replace/append section, save in src/voice_server/elicitation/tools.py
+- [x] T013 [US1] Implement read_intent tool — load doc, return content + populated/empty section lists in src/voice_server/elicitation/tools.py
+- [x] T014 [US1] Implement finalise_intent tool — validate mandatory fields, set Status: confirmed, save in src/voice_server/elicitation/tools.py
+- [x] T015 [US1] Register elicitation tools in BidiAgent — modify create_bidi_agent() to accept and include tools in src/voice_server/bidi/agent.py
+- [x] T016 [US1] Wire elicitation system prompt into AudioBridge.start() — prepend elicitation instructions to system prompt in src/voice_server/bidi/agent.py
 
 **Checkpoint**: A user can speak and the agent captures their intent into a valid document
 
@@ -74,9 +74,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Implement append mode in update_intent_section for list sections (quality_attributes, success_criteria, assumptions, clarifications) with auto-incrementing IDs in src/voice_server/elicitation/tools.py
-- [ ] T018 [US2] Implement read-back capability — read_intent returns natural-language summary suitable for voice narration in src/voice_server/elicitation/tools.py
-- [ ] T019 [US2] Add contradiction handling to system prompt — instruct agent to acknowledge changes and update (not duplicate) in src/voice_server/elicitation/prompts.py
+- [x] T017 [US2] Implement append mode in update_intent_section for list sections (quality_attributes, success_criteria, assumptions, clarifications) with auto-incrementing IDs in src/voice_server/elicitation/tools.py
+- [x] T018 [US2] Implement read-back capability — read_intent returns natural-language summary suitable for voice narration in src/voice_server/elicitation/tools.py
+- [x] T019 [US2] Add contradiction handling to system prompt — instruct agent to acknowledge changes and update (not duplicate) in src/voice_server/elicitation/prompts.py
 
 **Checkpoint**: User can iteratively refine intent without data loss
 
@@ -90,9 +90,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T020 [US3] Add clarification recording to update_intent_section — support adding CLR-NNN entries with Prompt and Resolution fields in src/voice_server/elicitation/tools.py
-- [ ] T021 [US3] Extend system prompt with clarification behaviour — max 3 questions, prioritise by scope impact, record gaps as OPEN in src/voice_server/elicitation/prompts.py
-- [ ] T022 [US3] Implement early-exit handling in finalise_intent — record empty optional sections as OPEN clarifications before confirming in src/voice_server/elicitation/tools.py
+- [x] T020 [US3] Add clarification recording to update_intent_section — support adding CLR-NNN entries with Prompt and Resolution fields in src/voice_server/elicitation/tools.py
+- [x] T021 [US3] Extend system prompt with clarification behaviour — max 3 questions, prioritise by scope impact, record gaps as OPEN in src/voice_server/elicitation/prompts.py
+- [x] T022 [US3] Implement early-exit handling in finalise_intent — record empty optional sections as OPEN clarifications before confirming in src/voice_server/elicitation/tools.py
 
 **Checkpoint**: Agent intelligently probes for gaps without over-questioning
 
@@ -106,9 +106,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T023 [US4] Implement session detection — on AudioBridge start, scan .intent/ for draft documents and load most recent in src/voice_server/elicitation/storage.py
-- [ ] T024 [US4] Add resume logic to system prompt — when draft exists, instruct agent to acknowledge progress and guide toward remaining gaps in src/voice_server/elicitation/prompts.py
-- [ ] T025 [US4] Wire session detection into AudioBridge.start() — if draft found, pass document state to system prompt context in src/voice_server/bidi/agent.py
+- [x] T023 [US4] Implement session detection — on AudioBridge start, scan .intent/ for draft documents and load most recent in src/voice_server/elicitation/storage.py
+- [x] T024 [US4] Add resume logic to system prompt — when draft exists, instruct agent to acknowledge progress and guide toward remaining gaps in src/voice_server/elicitation/prompts.py
+- [x] T025 [US4] Wire session detection into AudioBridge.start() — if draft found, pass document state to system prompt context in src/voice_server/bidi/agent.py
 
 **Checkpoint**: Conversations survive across sessions without re-asking answered questions
 
@@ -118,9 +118,9 @@
 
 **Purpose**: Error handling, observability, validation
 
-- [ ] T026 [P] Implement retry logic in tool functions — silent retry once on filesystem errors, return error on persistent failure in src/voice_server/elicitation/tools.py
-- [ ] T027 [P] Add structured logging for tool invocations (create, update, read, finalise) in src/voice_server/elicitation/tools.py
-- [ ] T028 [P] Add metrics for intent capture (documents created, sessions to completion, average fields populated) in src/voice_server/observability/metrics.py
+- [x] T026 [P] Implement retry logic in tool functions — silent retry once on filesystem errors, return error on persistent failure in src/voice_server/elicitation/tools.py
+- [x] T027 [P] Add structured logging for tool invocations (create, update, read, finalise) in src/voice_server/elicitation/tools.py
+- [x] T028 [P] Add metrics for intent capture (documents created, sessions to completion, average fields populated) in src/voice_server/observability/metrics.py
 - [ ] T029 Run quickstart.md validation — verify tool invocation produces valid intent-kit document
 
 ---
