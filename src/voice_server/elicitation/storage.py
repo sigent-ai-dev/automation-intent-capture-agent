@@ -57,11 +57,13 @@ def list_intents() -> list[str]:
     path = _intent_dir()
     if not path.exists():
         return []
-    return sorted(
-        re.match(r"(INT-\d+)\.md", f.name).group(1)
-        for f in path.glob("INT-*.md")
-        if f.is_file() and re.match(r"INT-\d+\.md", f.name)
-    )
+    result = []
+    for f in path.glob("INT-*.md"):
+        if f.is_file():
+            m = re.match(r"(INT-\d+)\.md", f.name)
+            if m:
+                result.append(m.group(1))
+    return sorted(result)
 
 
 def find_draft_intents() -> list[str]:

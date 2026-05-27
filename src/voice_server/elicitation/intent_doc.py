@@ -116,8 +116,12 @@ class IntentDocument:
 
     def empty_sections(self) -> list[str]:
         all_sections = [
-            "context", "intent", "motivation",
-            "quality_attributes", "success_criteria", "assumptions",
+            "context",
+            "intent",
+            "motivation",
+            "quality_attributes",
+            "success_criteria",
+            "assumptions",
         ]
         return [s for s in all_sections if s not in self.populated_sections()]
 

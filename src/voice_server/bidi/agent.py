@@ -53,9 +53,8 @@ class AudioBridge:
         self._retrying = False
 
     async def start(self) -> None:
-        from voice_server.elicitation.prompts import build_system_prompt
+        from voice_server.elicitation.prompts import build_resume_context, build_system_prompt
         from voice_server.elicitation.storage import find_draft_intents, load_intent
-        from voice_server.elicitation.prompts import build_resume_context
 
         settings = get_settings()
         self._trace_subsegment("voice_connection.start")

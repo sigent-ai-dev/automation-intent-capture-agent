@@ -6,7 +6,6 @@ from strands import tool
 
 from voice_server.elicitation.intent_doc import IntentDocument
 from voice_server.elicitation.storage import (
-    find_draft_intents,
     list_intents,
     load_intent,
     next_intent_id,
@@ -17,8 +16,13 @@ from voice_server.observability.logging import get_logger
 logger = get_logger(__name__)
 
 VALID_SECTIONS = [
-    "context", "intent", "motivation",
-    "quality_attributes", "success_criteria", "assumptions", "clarifications",
+    "context",
+    "intent",
+    "motivation",
+    "quality_attributes",
+    "success_criteria",
+    "assumptions",
+    "clarifications",
 ]
 
 
@@ -87,7 +91,9 @@ def update_intent_section(intent_id: str, section: str, content: str, append: bo
     if section not in VALID_SECTIONS:
         return {
             "status": "error",
-            "content": [{"text": f"Invalid section '{section}'. Valid: {', '.join(VALID_SECTIONS)}"}],
+            "content": [
+                {"text": f"Invalid section '{section}'. Valid: {', '.join(VALID_SECTIONS)}"}
+            ],
         }
 
     doc = load_intent(intent_id)
@@ -177,14 +183,18 @@ def finalise_intent(intent_id: str) -> dict:
     if missing:
         return {
             "status": "error",
-            "content": [{"text": f"Cannot finalise — missing mandatory fields: {', '.join(missing)}"}],
+            "content": [
+                {"text": f"Cannot finalise — missing mandatory fields: {', '.join(missing)}"}
+            ],
         }
 
     for empty_section in doc.empty_sections():
         if empty_section not in ("context", "intent", "motivation"):
             clr_id = f"CLR-{len(doc.clarifications) + 1:03d}"
             doc.clarifications.append(f"### {clr_id}")
-            doc.clarifications.append(f"**Prompt:** What are the {empty_section.replace('_', ' ')} for this project?")
+            doc.clarifications.append(
+                f"**Prompt:** What are the {empty_section.replace('_', ' ')} for this project?"
+            )
             doc.clarifications.append("**Resolution:** OPEN")
             doc.clarifications.append("")
 
@@ -201,7 +211,9 @@ def finalise_intent(intent_id: str) -> dict:
     logger.info("intent_finalised", intent_id=intent_id)
     return {
         "status": "success",
-        "content": [{"text": f"{intent_id} finalised and confirmed. Ready for downstream processing."}],
+        "content": [
+            {"text": f"{intent_id} finalised and confirmed. Ready for downstream processing."}
+        ],
     }
 
 
