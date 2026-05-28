@@ -1,4 +1,5 @@
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SessionProvider, useSession } from './contexts/SessionContext';
 import { ConversationProvider } from './contexts/ConversationContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
@@ -8,6 +9,10 @@ import { LandingView } from './components/session/LandingView';
 import { ActiveSessionView } from './components/session/ActiveSessionView';
 import { CompletionView } from './components/session/CompletionView';
 import { useBeforeUnload } from './hooks/useBeforeUnload';
+import LoginForm from './components/auth/LoginForm';
+import NewPasswordForm from './components/auth/NewPasswordForm';
+import { RoleGuard } from './components/auth/RoleGuard';
+import { LoadingSpinner } from './components/common/LoadingSpinner';
 
 function AppContent() {
   const { status } = useSession();
@@ -45,15 +50,41 @@ function AppContent() {
   );
 }
 
+function AuthGate() {
+  const { state } = useAuth();
+
+  switch (state) {
+    case 'loading':
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      );
+    case 'unauthenticated':
+      return <LoginForm />;
+    case 'new-password-required':
+      return <NewPasswordForm />;
+    case 'authenticated':
+      return (
+        <SessionProvider>
+          <ConversationProvider>
+            <AppContent />
+            <RoleGuard requiredGroups={['admin']} fallback={null}>
+              <div id="admin-panel-placeholder" />
+            </RoleGuard>
+          </ConversationProvider>
+        </SessionProvider>
+      );
+  }
+}
+
 export function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <SessionProvider>
-          <ConversationProvider>
-            <AppContent />
-          </ConversationProvider>
-        </SessionProvider>
+        <AuthProvider>
+          <AuthGate />
+        </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

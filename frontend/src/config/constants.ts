@@ -3,7 +3,6 @@ declare global {
     APP_CONFIG?: {
       WEBSOCKET_URL?: string;
       API_URL?: string;
-      ENABLE_AUTH?: boolean;
     };
   }
 }
@@ -14,7 +13,6 @@ const runtime = window.APP_CONFIG ?? {};
 export const CONFIG = {
   WEBSOCKET_URL: runtime.WEBSOCKET_URL || env.VITE_WEBSOCKET_URL || 'ws://localhost:8080/ws/audio',
   API_URL: runtime.API_URL || env.VITE_API_URL || 'http://localhost:8080',
-  ENABLE_AUTH: runtime.ENABLE_AUTH ?? env.VITE_ENABLE_AUTH === 'true',
   INPUT_SAMPLE_RATE: Number(env.VITE_INPUT_SAMPLE_RATE) || 16000,
   OUTPUT_SAMPLE_RATE: Number(env.VITE_OUTPUT_SAMPLE_RATE) || 24000,
   AUDIO_CHUNK_SIZE: Number(env.VITE_AUDIO_CHUNK_SIZE) || 1600,
