@@ -126,6 +126,17 @@ class AudioBridge:
 
         await self._ws.send_text(json.dumps({"type": "error", "code": "VOICE_SERVICE_UNAVAILABLE"}))
 
+        from voice_server.notifications import notify
+        from voice_server.notifications.events import ErrorOccurred
+
+        await notify(
+            ErrorOccurred(
+                error_type="VOICE_SERVICE_UNAVAILABLE",
+                session_id=self.session_id,
+                description="All retry attempts exhausted. User notified.",
+            )
+        )
+
     async def stop(self) -> None:
         self._trace_subsegment("voice_connection.stop")
         if self._reconnection:

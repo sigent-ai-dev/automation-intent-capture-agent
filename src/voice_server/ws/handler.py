@@ -2,7 +2,7 @@ import asyncio
 
 from fastapi import WebSocket, WebSocketDisconnect
 
-from voice_server.bidi.agent import AudioBridge
+from voice_server.config import get_settings
 from voice_server.models.codec import AudioCodec
 from voice_server.models.session import Session, SessionState
 from voice_server.observability.logging import get_logger
@@ -42,7 +42,7 @@ async def websocket_audio_endpoint(websocket: WebSocket) -> None:
     record_session_connect(session.id)
     logger.info("session_created", session_id=session.id, user_id=user_id)
 
-    bridge: AudioBridge | None = None
+    bridge = None
     try:
         codec = await _negotiate_codec(websocket, session)
         if codec is None:
@@ -54,8 +54,13 @@ async def websocket_audio_endpoint(websocket: WebSocket) -> None:
         await websocket.send_text(make_session_ready(session.id, user_id))
         logger.info("session_streaming", session_id=session.id)
 
-        bridge = AudioBridge(session_id=session.id, ws=websocket)
-        await bridge.start()
+        settings = get_settings()
+        if not settings.local_mode:
+            from voice_server.bidi.agent import AudioBridge
+
+            bridge = AudioBridge(session_id=session.id, ws=websocket)
+            await bridge.start()
+            logger.info("audio_bridge_started", session_id=session.id)
 
         await _stream_loop(websocket, session, bridge)
     except WebSocketDisconnect:
@@ -115,7 +120,7 @@ async def _negotiate_codec(websocket: WebSocket, session: Session) -> AudioCodec
     return codec
 
 
-async def _stream_loop(websocket: WebSocket, session: Session, bridge: AudioBridge) -> None:
+async def _stream_loop(websocket: WebSocket, session: Session, bridge: object | None) -> None:
     while True:
         message = await websocket.receive()
         session.touch()
@@ -140,5 +145,6 @@ async def _handle_text_frame(websocket: WebSocket, session: Session, raw: str) -
         await websocket.send_text(make_error(f"Unknown message type: {msg_type}", "INVALID_FRAME"))
 
 
-async def _handle_binary_frame(session: Session, bridge: AudioBridge, data: bytes) -> None:
-    await bridge.push_audio(data)
+async def _handle_binary_frame(session: Session, bridge: object | None, data: bytes) -> None:
+    if bridge is not None:
+        await bridge.push_audio(data)
