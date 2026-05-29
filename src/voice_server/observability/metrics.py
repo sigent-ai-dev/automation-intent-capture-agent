@@ -108,3 +108,15 @@ def record_drain_result(total_sessions: int, failed_count: int) -> None:
         total_sessions=total_sessions,
         failed_count=failed_count,
     )
+
+
+def record_notification_sent(event_type: str) -> None:
+    logger.info("metric_notification_sent", event_type=event_type)
+
+
+def record_notification_failed(event_type: str, error: str) -> None:
+    logger.info("metric_notification_failed", event_type=event_type, error=error)
+
+
+def record_notification_rate_limited(event_type: str) -> None:
+    logger.info("metric_notification_rate_limited", event_type=event_type)
