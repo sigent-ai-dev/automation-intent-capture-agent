@@ -10,7 +10,7 @@ test.describe('Session Flow', () => {
 
   test('header shows title and theme toggle', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: 'Intent Capture' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'AICA' })).toBeVisible();
     const themeBtn = page.getByRole('button', { name: /switch to/i });
     await expect(themeBtn).toBeVisible();
   });
