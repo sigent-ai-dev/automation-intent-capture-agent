@@ -11,16 +11,17 @@ export function Header() {
 
   return (
     <header
-      className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b"
+      className="sticky top-0 z-10 flex items-center justify-between px-5 py-3 border-b backdrop-blur-md"
       style={{
-        backgroundColor: 'var(--color-surface)',
+        backgroundColor: 'rgba(var(--color-surface-rgb, 26, 26, 26), 0.7)',
         borderColor: 'var(--color-border)',
+        borderImage: 'linear-gradient(to right, var(--color-primary), transparent) 1',
       }}
     >
-      <div className="flex items-center gap-2">
-        <img src="/logo.svg" alt="" className="w-6 h-6" />
-        <h1 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-          Intent Capture
+      <div className="flex items-center gap-2.5">
+        <img src="/logo.svg" alt="" className="w-7 h-7" />
+        <h1 className="text-lg font-bold tracking-wide" style={{ color: 'var(--color-primary)' }}>
+          AICA
         </h1>
       </div>
       <div className="flex items-center gap-3">

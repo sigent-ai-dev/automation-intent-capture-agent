@@ -17,7 +17,7 @@ export default function NewPasswordForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[var(--color-bg)] to-[var(--color-surface)]">
+    <div className="flex items-center justify-center min-h-screen bg-[var(--color-background)]">
       <form onSubmit={handleSubmit} className="bg-[var(--color-surface)] rounded-xl p-8 w-full max-w-md shadow-lg border border-[var(--color-border)]">
         <h1 className="text-2xl font-bold text-center text-[var(--color-text)] mb-2">Set New Password</h1>
         <p className="text-sm text-center text-[var(--color-text-secondary)] mb-6">

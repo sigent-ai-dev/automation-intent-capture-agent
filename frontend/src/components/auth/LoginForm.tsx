@@ -39,9 +39,9 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[var(--color-bg)] to-[var(--color-surface)]">
+    <div className="flex items-center justify-center min-h-screen bg-[var(--color-background)]">
       <form onSubmit={handleSubmit} className="bg-[var(--color-surface)] rounded-xl p-8 w-full max-w-md shadow-lg border border-[var(--color-border)]">
-        <h1 className="text-2xl font-bold text-center text-[var(--color-text)] mb-6">Sign in to Intent Capture</h1>
+        <h1 className="text-2xl font-bold text-center text-[var(--color-text)] mb-6">Sign in to AICA</h1>
 
         <label htmlFor="login-username" className="block mb-4">
           <span className="text-sm text-[var(--color-text-secondary)]">Email</span>
