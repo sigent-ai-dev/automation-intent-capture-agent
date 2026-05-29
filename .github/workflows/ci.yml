@@ -167,7 +167,7 @@ jobs:
           import asyncio, json, websockets
 
           async def test():
-              async with websockets.connect('ws://localhost:8080/ws/audio') as ws:
+              async with websockets.connect('ws://localhost:8080/ws/audio', subprotocols=['v1.audio.intent']) as ws:
                   await ws.send(json.dumps({
                       'type': 'codec_negotiate',
                       'codec': 'pcm',
