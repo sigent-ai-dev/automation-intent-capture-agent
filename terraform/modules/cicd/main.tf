@@ -39,6 +39,28 @@ resource "aws_iam_role_policy" "deploy" {
       {
         Effect = "Allow"
         Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket",
+          "s3:DeleteObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.project_name}-tfstate",
+          "arn:aws:s3:::${var.project_name}-tfstate/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = "arn:aws:dynamodb:*:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-tfstate-lock"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
@@ -66,6 +88,33 @@ resource "aws_iam_role_policy" "deploy" {
           "iam:PassRole"
         ]
         Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.project_name}-*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:Describe*",
+          "elasticloadbalancing:Describe*",
+          "ecs:Describe*",
+          "ecs:List*",
+          "ecr:Describe*",
+          "ecr:List*",
+          "iam:Get*",
+          "iam:List*",
+          "logs:Describe*",
+          "logs:List*",
+          "dynamodb:Describe*",
+          "dynamodb:List*",
+          "application-autoscaling:Describe*",
+          "cloudwatch:Describe*",
+          "cloudwatch:Get*",
+          "cloudwatch:List*",
+          "cognito-idp:Describe*",
+          "cognito-idp:List*",
+          "cognito-idp:Get*",
+          "acm:Describe*",
+          "acm:List*"
+        ]
+        Resource = "*"
       }
     ]
   })

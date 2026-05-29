@@ -1,6 +1,6 @@
 """Unit tests for Sec-WebSocket-Protocol token extraction."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
