@@ -2,6 +2,10 @@ import { vi, describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from '../../../src/contexts/AuthContext';
 
+vi.mock('../../../src/config/amplify', () => ({
+  isAuthConfigured: true,
+}));
+
 vi.mock('../../../src/services/authService', () => ({
   login: vi.fn(),
   logout: vi.fn(),
