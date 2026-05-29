@@ -19,7 +19,7 @@ test.describe('Accessibility', () => {
     await page.goto('/');
     const h1 = page.locator('h1');
     await expect(h1).toHaveCount(1);
-    await expect(h1).toHaveText('Intent Capture');
+    await expect(h1).toHaveText('INCA');
   });
 
   test('input has visible label or placeholder', async ({ page }) => {
