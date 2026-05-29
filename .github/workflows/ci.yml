@@ -167,7 +167,7 @@ jobs:
           import asyncio, json, websockets
 
           async def test():
-              async with websockets.connect('ws://localhost:8080/ws/audio') as ws:
+              async with websockets.connect('ws://localhost:8080/ws/audio', subprotocols=['v1.audio.intent']) as ws:
                   await ws.send(json.dumps({
                       'type': 'codec_negotiate',
                       'codec': 'pcm',
@@ -238,3 +238,29 @@ jobs:
         with:
           name: dist
           path: dist/
+
+  terraform-plan:
+    name: "Terraform Plan (Dev)"
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export environment
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .github/configs/Dev.env
+      - uses: ./.github/actions/setup-intent-capture
+        with:
+          aws_role_arn: ${{ env.AWS_OIDC_ROLE }}
+          aws_region: ${{ env.AWS_REGION }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      - name: Terraform format check
+        run: terraform fmt -recursive -check terraform/
+      - uses: ./.github/actions/terraform-run
+        with:
+          action: plan
+          backend_config: environments/dev.backend.hcl
+          var_file: environments/dev.tfvars

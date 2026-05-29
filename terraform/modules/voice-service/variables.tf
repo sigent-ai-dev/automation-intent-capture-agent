@@ -17,7 +17,8 @@ variable "image_tag" {
 
 variable "certificate_arn" {
   type        = string
-  description = "ACM certificate ARN for HTTPS listener"
+  description = "ACM certificate ARN for HTTPS listener (empty string = HTTP only)"
+  default     = ""
 }
 
 variable "vpc_id" {
@@ -65,6 +66,12 @@ variable "container_port" {
 variable "health_check_path" {
   type    = string
   default = "/health/live"
+}
+
+variable "cognito_user_pool_id" {
+  type        = string
+  description = "Cognito user pool ID for JWT validation"
+  default     = ""
 }
 
 variable "websocket_idle_timeout" {

@@ -53,6 +53,8 @@ resource "aws_ecs_task_definition" "voice_server" {
         { name = "NOVA_SONIC_MODEL_ID", value = "amazon.nova-sonic-v2:0" },
         { name = "SHUTDOWN_DRAIN_SECONDS", value = "30" },
         { name = "PUBLIC_URL", value = "https://${aws_lb.main.dns_name}" },
+        { name = "COGNITO_USER_POOL_ID", value = var.cognito_user_pool_id },
+        { name = "COGNITO_REGION", value = var.aws_region },
       ]
 
       logConfiguration = {
