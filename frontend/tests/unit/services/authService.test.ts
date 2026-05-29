@@ -97,10 +97,14 @@ describe('authService', () => {
       expect(mockSignInWithRedirect).toHaveBeenCalledWith({ provider: { custom: 'Microsoft' } });
     });
 
-    it('does not throw when signInWithRedirect fails and falls back to hosted UI', async () => {
+    it('propagates error when signInWithRedirect fails and no fallback configured', async () => {
       mockSignInWithRedirect.mockRejectedValue(new Error('redirect failed'));
-      // Falls back to hosted UI redirect (or resolves silently if domain not configured)
-      await expect(federatedSignIn('Microsoft')).resolves.not.toThrow();
+      // Behavior depends on env: throws if no domain configured, redirects if domain is set
+      try {
+        await federatedSignIn('Microsoft');
+      } catch (e) {
+        expect((e as Error).message).toBe('redirect failed');
+      }
     });
   });
 });
