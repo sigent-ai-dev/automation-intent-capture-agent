@@ -11,27 +11,18 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background-color: var(--color-background);
   color: var(--color-text-primary);
-  transition: background-color 0.2s, color 0.2s;
+  background: var(--color-background);
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
 }
 
-[data-theme='dark'] body::before {
-  content: '';
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 255, 127, 0.06) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-[data-theme='dark'] #root {
-  position: relative;
-  z-index: 1;
+[data-theme='dark'] body {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(0, 255, 127, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 20%, rgba(0, 210, 106, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 60% 60%, rgba(255, 107, 122, 0.06) 0%, transparent 50%),
+    #0d0d0d;
 }
 
 ::-webkit-scrollbar {
