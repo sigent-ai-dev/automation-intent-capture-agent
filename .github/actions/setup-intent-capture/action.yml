@@ -1,0 +1,49 @@
+name: Setup Intent Capture
+description: Configure AWS credentials, Node.js, Python, and Terraform
+
+inputs:
+  aws_role_arn:
+    description: OIDC role ARN for AWS auth
+    required: true
+  aws_region:
+    description: AWS region
+    required: true
+  terraform_version:
+    description: Terraform version to install
+    required: false
+    default: "1.12"
+  node_version:
+    description: Node.js version
+    required: false
+    default: "20"
+  python_version:
+    description: Python version
+    required: false
+    default: "3.12"
+
+runs:
+  using: composite
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws_role_arn }}
+        aws-region: ${{ inputs.aws_region }}
+        role-session-name: IntentCaptureGitHubActions
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node_version }}
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    - name: Setup Terraform
+      if: inputs.terraform_version != ''
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+        terraform_wrapper: false

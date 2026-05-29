@@ -1,0 +1,54 @@
+name: Terraform Run
+description: Run Terraform plan, apply, or destroy
+
+inputs:
+  action:
+    description: "Terraform action: plan, apply, or destroy"
+    required: true
+  backend_config:
+    description: Path to backend configuration file
+    required: true
+  var_file:
+    description: Path to variables file
+    required: true
+  working_directory:
+    description: Terraform working directory
+    required: false
+    default: terraform
+
+outputs:
+  has_changes:
+    description: Whether the plan has infrastructure changes
+    value: ${{ steps.plan.outputs.has_changes }}
+
+runs:
+  using: composite
+  steps:
+    - name: Terraform Init
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: terraform init -input=false -backend-config=${{ inputs.backend_config }}
+
+    - name: Terraform Plan
+      id: plan
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        terraform plan -lock=false -var-file=${{ inputs.var_file }} -out=tfplan -detailed-exitcode || EXIT_CODE=$?
+        if [ "${EXIT_CODE:-0}" = "2" ]; then
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has_changes=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Terraform Apply
+      if: inputs.action == 'apply'
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: terraform apply -auto-approve tfplan
+
+    - name: Terraform Destroy
+      if: inputs.action == 'destroy'
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: terraform destroy -auto-approve -var-file=${{ inputs.var_file }}

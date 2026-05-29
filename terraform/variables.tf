@@ -24,22 +24,8 @@ variable "image_tag" {
 
 variable "certificate_arn" {
   type        = string
-  description = "ACM certificate ARN for HTTPS on the ALB"
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID where the service will run"
-}
-
-variable "public_subnet_ids" {
-  type        = list(string)
-  description = "Public subnet IDs for the ALB"
-}
-
-variable "private_subnet_ids" {
-  type        = list(string)
-  description = "Private subnet IDs for ECS tasks"
+  description = "ACM certificate ARN for HTTPS on the ALB (empty = HTTP only for dev)"
+  default     = ""
 }
 
 variable "cognito_callback_urls" {

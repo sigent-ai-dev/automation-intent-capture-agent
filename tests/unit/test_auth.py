@@ -1,7 +1,7 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 
-def test_extract_user_id_from_alb_header(monkeypatch):
+def test_extract_user_id_from_protocol_header(monkeypatch):
     monkeypatch.setenv("LOCAL_MODE", "false")
     from importlib import reload
 
@@ -13,8 +13,9 @@ def test_extract_user_id_from_alb_header(monkeypatch):
     reload(voice_server.ws.auth)
 
     ws = MagicMock()
-    ws.headers = {"x-amzn-oidc-identity": "cognito-sub-123"}
-    user_id = voice_server.ws.auth.extract_user_id(ws)
+    ws.headers = {"sec-websocket-protocol": "v1.audio.intent, test-jwt-token"}
+    with patch.object(voice_server.ws.auth, "validate_token_sync", return_value="cognito-sub-123"):
+        user_id = voice_server.ws.auth.extract_user_id(ws)
     assert user_id == "cognito-sub-123"
 
 

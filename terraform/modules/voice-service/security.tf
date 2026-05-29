@@ -1,6 +1,6 @@
 resource "aws_security_group" "alb" {
   name        = "${local.name}-alb"
-  description = "ALB security group — HTTPS inbound"
+  description = "ALB security group - HTTPS inbound"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -29,7 +29,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_security_group" "ecs_tasks" {
   name        = "${local.name}-ecs-tasks"
-  description = "ECS tasks — allow traffic from ALB only"
+  description = "ECS tasks - allow traffic from ALB only"
   vpc_id      = var.vpc_id
 
   ingress {

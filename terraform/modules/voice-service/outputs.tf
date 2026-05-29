@@ -9,8 +9,8 @@ output "ecr_repository_url" {
 }
 
 output "service_url" {
-  description = "HTTPS service URL"
-  value       = "https://${aws_lb.main.dns_name}"
+  description = "Service URL (HTTPS if cert provided, HTTP otherwise)"
+  value       = var.certificate_arn != "" ? "https://${aws_lb.main.dns_name}" : "http://${aws_lb.main.dns_name}"
 }
 
 output "cluster_name" {
