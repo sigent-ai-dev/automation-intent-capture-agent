@@ -2,41 +2,50 @@ name: Deploy
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
+    paths:
+      - "src/**"
+      - "Dockerfile"
+      - "pyproject.toml"
+      - "terraform/**"
   workflow_dispatch:
     inputs:
       environment:
         description: "Target environment"
         required: true
-        default: "dev"
+        default: "Dev"
         type: choice
         options:
-          - dev
-          - staging
-          - prod
+          - Dev
+
+concurrency:
+  group: intent-capture-deploy
+  cancel-in-progress: false
 
 permissions:
   id-token: write
   contents: read
 
-env:
-  AWS_REGION: eu-west-1
-  ECR_REPOSITORY: intent-capture-voice-server
-
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    name: Build & Push Image
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.environment || 'Dev' }}
     outputs:
       image_tag: ${{ steps.meta.outputs.image_tag }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Export environment
+        uses: cardinalby/export-env-action@v2
         with:
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          envFile: .github/configs/${{ inputs.environment || 'Dev' }}.env
+
+      - uses: ./.github/actions/setup-intent-capture
+        with:
+          aws_role_arn: ${{ env.AWS_OIDC_ROLE }}
+          aws_region: ${{ env.AWS_REGION }}
+          terraform_version: ""
 
       - name: Login to ECR
         id: ecr-login
@@ -44,81 +53,103 @@ jobs:
 
       - name: Determine image tag
         id: meta
-        run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "image_tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "image_tag=sha-${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "image_tag=sha-${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Docker image
-        env:
-          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ steps.meta.outputs.image_tag }}
         run: |
-          docker build -t $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          REGISTRY=${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG=${{ steps.meta.outputs.image_tag }}
+          docker build --platform linux/amd64 -t $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $REGISTRY/$ECR_REPOSITORY:latest
-          docker push $REGISTRY/$ECR_REPOSITORY:latest
 
-  deploy:
-    runs-on: ubuntu-latest
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-24.04
     needs: build-and-push
-    environment: ${{ inputs.environment || 'dev' }}
+    environment: ${{ inputs.environment || 'Dev' }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Export environment
+        uses: cardinalby/export-env-action@v2
         with:
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          envFile: .github/configs/${{ inputs.environment || 'Dev' }}.env
+
+      - uses: ./.github/actions/setup-intent-capture
+        with:
+          aws_role_arn: ${{ env.AWS_OIDC_ROLE }}
+          aws_region: ${{ env.AWS_REGION }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - uses: ./.github/actions/terraform-run
+        with:
+          action: apply
+          backend_config: environments/dev.backend.hcl
+          var_file: environments/dev.tfvars
+
+  deploy-service:
+    name: Deploy ECS Service
+    runs-on: ubuntu-24.04
+    needs: [build-and-push, terraform]
+    environment: ${{ inputs.environment || 'Dev' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Export environment
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .github/configs/${{ inputs.environment || 'Dev' }}.env
+
+      - uses: ./.github/actions/setup-intent-capture
+        with:
+          aws_role_arn: ${{ env.AWS_OIDC_ROLE }}
+          aws_region: ${{ env.AWS_REGION }}
+          terraform_version: ""
 
       - name: Deploy to ECS
-        env:
-          CLUSTER: intent-capture-${{ inputs.environment || 'dev' }}
-          SERVICE: intent-capture-${{ inputs.environment || 'dev' }}
-          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
         run: |
           aws ecs update-service \
-            --cluster $CLUSTER \
-            --service $SERVICE \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
             --force-new-deployment
 
       - name: Wait for deployment
-        env:
-          CLUSTER: intent-capture-${{ inputs.environment || 'dev' }}
-          SERVICE: intent-capture-${{ inputs.environment || 'dev' }}
         run: |
           aws ecs wait services-stable \
-            --cluster $CLUSTER \
-            --services $SERVICE
+            --cluster $ECS_CLUSTER \
+            --services $ECS_SERVICE
 
-  smoke-test:
-    runs-on: ubuntu-latest
-    needs: deploy
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-24.04
+    needs: deploy-service
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Export environment
+        uses: cardinalby/export-env-action@v2
         with:
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          envFile: .github/configs/${{ inputs.environment || 'Dev' }}.env
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: ./.github/actions/setup-intent-capture
         with:
-          python-version: "3.12"
+          aws_role_arn: ${{ env.AWS_OIDC_ROLE }}
+          aws_region: ${{ env.AWS_REGION }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: Install smoke test dependencies
+      - name: Get service URL
+        id: url
+        working-directory: terraform
+        run: |
+          terraform init -input=false -backend-config=environments/dev.backend.hcl
+          SERVICE_URL=$(terraform output -raw service_url 2>/dev/null || echo "")
+          echo "service_url=$SERVICE_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Install test dependencies
         run: pip install websockets httpx
 
       - name: Run smoke tests
         env:
-          SERVICE_URL: ${{ secrets.SERVICE_URL }}
-          COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
-          COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
-          SMOKE_TEST_USERNAME: ${{ secrets.SMOKE_TEST_USERNAME }}
-          SMOKE_TEST_PASSWORD: ${{ secrets.SMOKE_TEST_PASSWORD }}
+          SERVICE_URL: ${{ steps.url.outputs.service_url }}
         run: bash .github/scripts/smoke-test.sh

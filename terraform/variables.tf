@@ -24,7 +24,8 @@ variable "image_tag" {
 
 variable "certificate_arn" {
   type        = string
-  description = "ACM certificate ARN for HTTPS on the ALB"
+  description = "ACM certificate ARN for HTTPS on the ALB (empty = HTTP only for dev)"
+  default     = ""
 }
 
 variable "cognito_callback_urls" {

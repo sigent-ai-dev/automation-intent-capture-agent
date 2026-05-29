@@ -17,7 +17,8 @@ variable "image_tag" {
 
 variable "certificate_arn" {
   type        = string
-  description = "ACM certificate ARN for HTTPS listener"
+  description = "ACM certificate ARN for HTTPS listener (empty string = HTTP only)"
+  default     = ""
 }
 
 variable "vpc_id" {

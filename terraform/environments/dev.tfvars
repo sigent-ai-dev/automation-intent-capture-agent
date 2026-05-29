@@ -7,5 +7,6 @@ image_tag     = "latest"
 cognito_callback_urls = ["http://localhost:5174", "https://intent-capture-dev.example.com"]
 cognito_logout_urls   = ["http://localhost:5174"]
 
-# Certificate ARN — import self-signed cert first (see environments/README.md)
-# certificate_arn = "arn:aws:acm:eu-west-1:885659622434:certificate/REPLACE-AFTER-IMPORT"
+# HTTP only for dev — no certificate needed
+# For HTTPS, import a cert and set: certificate_arn = "arn:aws:acm:..."
+certificate_arn = ""
