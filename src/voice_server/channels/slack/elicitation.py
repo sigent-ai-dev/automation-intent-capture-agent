@@ -57,11 +57,16 @@ async def handle_slack_message(client, event: dict, say) -> None:
     history.add_turn("user", text, "slack")
     await history_adapter.save(history)
 
-    populated = ", ".join(session.section_attributions.keys()) or "none yet"
-    response = (
-        f"Resuming *{session.project_name}* ({session.intent_id}).\n\n"
-        f"Populated: {populated}.\n"
-        f"What would you like to add or discuss?"
+    from voice_server.channels.text_agent import invoke_text_agent
+    from voice_server.elicitation.storage import load_intent
+
+    doc = load_intent(session.intent_id)
+    response = await invoke_text_agent(
+        message=text,
+        channel="slack",
+        user_email=email,
+        history=history,
+        doc=doc,
     )
 
     history.add_turn("agent", response, "slack")

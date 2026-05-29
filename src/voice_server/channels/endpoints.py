@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from voice_server.channels.text_agent import invoke_text_agent
 from voice_server.elicitation.intent_doc import IntentDocument
 from voice_server.elicitation.storage import load_intent
 from voice_server.observability.logging import get_logger
@@ -97,9 +98,14 @@ async def send_message(intent_id: str, request: MessageRequest):
     history.add_turn("user", request.message, request.channel)
     await history_adapter.save(history)
 
-    # TODO: invoke elicitation agent with history context and return real response
-    # For now, echo acknowledgement — full agent integration requires Bedrock connectivity
-    agent_response = f"Received your message on {request.channel}. Processing..."
+    doc = load_intent(intent_id)
+    agent_response = await invoke_text_agent(
+        message=request.message,
+        channel=request.channel,
+        user_email=request.user_email,
+        history=history,
+        doc=doc,
+    )
 
     history.add_turn("agent", agent_response, request.channel)
     await history_adapter.save(history)
