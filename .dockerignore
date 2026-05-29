@@ -16,3 +16,10 @@ htmlcov/
 .DS_Store
 .idea/
 .vscode/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+*.tfstate
+*.tfstate.*
+.terraform/

@@ -9,6 +9,7 @@ dist/
 .pytest_cache/
 .coverage
 htmlcov/
+reports/
 *.log
 .env
 .env.*
@@ -18,6 +19,11 @@ Thumbs.db
 *.tmp
 .idea/
 .vscode/
+
+# Frontend
+node_modules/
+frontend/dist/
+frontend/test-results/
 
 # Terraform
 .terraform/
