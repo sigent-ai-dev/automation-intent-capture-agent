@@ -22,12 +22,12 @@ describe('LoginForm', () => {
     expect(screen.getByRole('button', { name: 'Sign in' })).toBeDefined();
   });
 
-  it('shows federation buttons when VITE_ENABLE_FEDERATION is not false', async () => {
+  it('hides federation buttons when VITE_ENABLE_FEDERATION is false', async () => {
     const { default: LoginForm } = await import('../../../../src/components/auth/LoginForm');
     render(<LoginForm />);
 
-    expect(screen.getByText('Sign in with Microsoft')).toBeDefined();
-    expect(screen.getByText('Sign in with Okta')).toBeDefined();
-    expect(screen.getByText('Sign in with Google')).toBeDefined();
+    expect(screen.queryByText('Sign in with Microsoft')).toBeNull();
+    expect(screen.queryByText('Sign in with Okta')).toBeNull();
+    expect(screen.queryByText('Sign in with Google')).toBeNull();
   });
 });

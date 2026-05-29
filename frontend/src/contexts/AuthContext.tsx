@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import { AuthState, AuthUser } from '../types/auth';
 import * as authService from '../services/authService';
 import { getCurrentUser, fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
+import { isAuthConfigured } from '../config/amplify';
 
 async function getDisplayName(): Promise<string> {
   const attrs = await fetchUserAttributes();
@@ -45,6 +46,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
+      if (!isAuthConfigured) {
+        setState('authenticated');
+        setUser({ username: 'anonymous', token: '', groups: [] });
+        return;
+      }
       try {
         const authed = await authService.isAuthenticated();
         if (authed) {
