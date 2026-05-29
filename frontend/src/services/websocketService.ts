@@ -1,5 +1,6 @@
 import { CONFIG } from '../config/constants';
 import type { ClientMessage, ServerMessage } from '../types/websocket';
+import { getToken } from './authService';
 
 export type MessageHandler = (msg: ServerMessage) => void;
 export type BinaryHandler = (data: ArrayBuffer) => void;
@@ -23,17 +24,19 @@ export class WebSocketService {
     if (handlers.onStatus) this.onStatus = handlers.onStatus;
   }
 
-  connect(sessionId: string): void {
+  async connect(sessionId: string): Promise<void> {
     this.sessionId = sessionId;
     this.intentionallyClosed = false;
     this.reconnectAttempt = 0;
-    this.doConnect();
+    await this.doConnect();
   }
 
-  private doConnect(): void {
+  private async doConnect(): Promise<void> {
     this.onStatus?.('connecting');
     const url = `${CONFIG.WEBSOCKET_URL}?session_id=${this.sessionId}`;
-    this.ws = new WebSocket(url);
+    const token = await getToken();
+    const protocols = token ? ['v1.audio.intent', token] : ['v1.audio.intent'];
+    this.ws = new WebSocket(url, protocols);
     this.ws.binaryType = 'arraybuffer';
 
     this.ws.onopen = () => {
@@ -113,7 +116,7 @@ export class WebSocketService {
     this.onStatus?.('reconnecting');
     const delay = Math.pow(2, this.reconnectAttempt) * 1000;
     this.reconnectAttempt++;
-    this.reconnectTimer = setTimeout(() => this.doConnect(), delay);
+    this.reconnectTimer = setTimeout(() => { this.doConnect(); }, delay);
   }
 
   disconnect(): void {

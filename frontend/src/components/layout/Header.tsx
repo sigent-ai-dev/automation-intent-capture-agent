@@ -1,7 +1,9 @@
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export function Header() {
   const { effective, setMode } = useTheme();
+  const { user, logout } = useAuth();
 
   const toggleTheme = () => {
     setMode(effective === 'dark' ? 'light' : 'dark');
@@ -21,13 +23,29 @@ export function Header() {
           Intent Capture
         </h1>
       </div>
-      <button
-        className="btn btn-ghost"
-        onClick={toggleTheme}
-        aria-label={`Switch to ${effective === 'dark' ? 'light' : 'dark'} mode`}
-      >
-        {effective === 'dark' ? '☀' : '☾'}
-      </button>
+      <div className="flex items-center gap-3">
+        {user && (
+          <>
+            <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              {user.username}
+            </span>
+            <button
+              className="btn btn-ghost text-sm"
+              onClick={logout}
+              aria-label="Sign out"
+            >
+              Sign out
+            </button>
+          </>
+        )}
+        <button
+          className="btn btn-ghost"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${effective === 'dark' ? 'light' : 'dark'} mode`}
+        >
+          {effective === 'dark' ? '☀' : '☾'}
+        </button>
+      </div>
     </header>
   );
 }

@@ -41,3 +41,21 @@ variable "private_subnet_ids" {
   type        = list(string)
   description = "Private subnet IDs for ECS tasks"
 }
+
+variable "cognito_callback_urls" {
+  type        = list(string)
+  description = "Allowed callback URLs for Cognito SPA client"
+  default     = ["http://localhost:5173"]
+}
+
+variable "cognito_logout_urls" {
+  type        = list(string)
+  description = "Allowed logout URLs for Cognito SPA client"
+  default     = ["http://localhost:5173"]
+}
+
+variable "cognito_enable_federation" {
+  type        = bool
+  description = "Enable federated identity providers in Cognito"
+  default     = false
+}

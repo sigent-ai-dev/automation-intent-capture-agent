@@ -95,7 +95,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           if (wsStatus === 'connected') setStatus('negotiating');
         },
       });
-      wsService.connect(resp.session_id);
+      await wsService.connect(resp.session_id);
     } catch (err) {
       setStatus('failed');
       setSession((s) => (s ? { ...s, error: String(err) } : s));
