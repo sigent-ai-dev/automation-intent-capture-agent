@@ -97,6 +97,8 @@ async def send_message(intent_id: str, request: MessageRequest):
     history.add_turn("user", request.message, request.channel)
     await history_adapter.save(history)
 
+    # TODO: invoke elicitation agent with history context and return real response
+    # For now, echo acknowledgement — full agent integration requires Bedrock connectivity
     agent_response = f"Received your message on {request.channel}. Processing..."
 
     history.add_turn("agent", agent_response, request.channel)

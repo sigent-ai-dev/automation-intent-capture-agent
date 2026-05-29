@@ -1,7 +1,5 @@
 from unittest.mock import AsyncMock, patch
 
-import pytest
-
 from voice_server.channels.claude.skill import intent_capture, _resolve_claude_identity
 
 

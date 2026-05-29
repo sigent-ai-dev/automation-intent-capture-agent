@@ -1,4 +1,4 @@
-from voice_server.persistence.intent_history_adapter import IntentHistory, IntentTurn
+from voice_server.persistence.intent_history_adapter import IntentHistory
 
 
 def test_add_turn_increments_count():

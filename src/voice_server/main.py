@@ -83,7 +83,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-from voice_server.channels.endpoints import router as channels_router
+from voice_server.channels.endpoints import router as channels_router  # noqa: E402
 
 app.include_router(health_router)
 app.include_router(capture_router)

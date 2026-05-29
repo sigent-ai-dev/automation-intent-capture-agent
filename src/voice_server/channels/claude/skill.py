@@ -136,6 +136,8 @@ async def _handle_message(email: str, intent_id: str, message: str) -> dict[str,
     history.add_turn("user", message, "claude")
     await history_adapter.save(history)
 
+    # TODO: invoke elicitation agent with history context and return real response
+    # For now, echo acknowledgement — full agent integration requires Bedrock connectivity
     agent_response = f"Received on claude channel. Processing your input for {intent_id}..."
 
     history.add_turn("agent", agent_response, "claude")

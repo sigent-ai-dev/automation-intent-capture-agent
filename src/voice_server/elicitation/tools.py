@@ -325,7 +325,7 @@ def _next_clr_id(items: list[str]) -> str:
     return f"CLR-{max_num + 1:03d}"
 
 
-import contextvars
+import contextvars  # noqa: E402
 
 _current_channel: contextvars.ContextVar[str] = contextvars.ContextVar(
     "_current_channel", default="voice"

@@ -1,6 +1,4 @@
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
+from unittest.mock import AsyncMock
 
 from voice_server.channels.slack.identity import resolve_email_from_slack
 
