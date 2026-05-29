@@ -13,6 +13,7 @@
   --color-border: #e0e0e0;
   --color-text: var(--color-text-primary);
   --color-surface-hover: #ebebeb;
+  --color-surface-rgb: 255, 255, 255;
   --color-mic-active: #ff4757;
   --color-mic-inactive: #00d26a;
 
@@ -56,6 +57,7 @@
   --color-border: #2e2e2e;
   --color-text: var(--color-text-primary);
   --color-surface-hover: #252525;
+  --color-surface-rgb: 26, 26, 26;
   --color-mic-active: #ff6b7a;
   --color-mic-inactive: #00ff7f;
 }
