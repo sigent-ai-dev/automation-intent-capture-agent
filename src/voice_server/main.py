@@ -3,6 +3,7 @@ import signal
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 
 from voice_server.config import get_settings
 from voice_server.capture.endpoints import router as capture_router
@@ -76,6 +77,14 @@ app = FastAPI(
     description="WebSocket audio server for Intent Capture Agent",
     version="0.1.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5174", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(health_router)
