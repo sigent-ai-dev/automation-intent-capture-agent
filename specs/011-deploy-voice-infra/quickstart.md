@@ -86,9 +86,24 @@ SERVICE_URL=https://$ALB_URL .github/scripts/smoke-test.sh
 2. Add the role ARN as a GitHub repository secret: `AWS_DEPLOY_ROLE_ARN`
 3. Trigger the deploy workflow manually or push a tag
 
+## Testing Voice Locally
+
+Voice requires Nova Sonic (Bedrock) access. To test voice locally:
+
+```bash
+# Run with LOCAL_MODE=false and AWS credentials
+LOCAL_MODE=false AWS_PROFILE=sigent+builder-Admin uv run uvicorn voice_server.main:app --port 8080
+```
+
+With `LOCAL_MODE=true` (the default for local dev), the audio bridge is **not created** — audio is accepted but no agent response is generated. You'll see a log: `voice_disabled_local_mode`.
+
+For pipeline testing without Bedrock, use the deployed environment (ALB) which has full Nova Sonic access.
+
 ## Troubleshooting
 
 - **Container won't start**: Check CloudWatch logs at `/ecs/intent-capture-dev`
 - **Health check failing**: Verify security group allows ALB → container on port 8080
 - **WebSocket 4001**: Check Cognito env vars are set in task definition (`COGNITO_USER_POOL_ID`, `COGNITO_REGION`)
 - **JWKS fetch timeout**: Verify NAT Gateway is routing egress from private subnet
+- **No voice response locally**: You're likely in LOCAL_MODE=true. Run with LOCAL_MODE=false + AWS creds
+- **Audio garbled/fast**: Check OUTPUT_SAMPLE_RATE matches Nova Sonic output (should be 16000)
