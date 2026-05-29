@@ -1,18 +1,18 @@
 :root {
-  --color-background: #ffffff;
-  --color-surface: #f8fafc;
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #64748b;
-  --color-primary: #6366f1;
-  --color-primary-hover: #4f46e5;
-  --color-user-bubble: #6366f1;
-  --color-agent-bubble: #f1f5f9;
-  --color-success: #10b981;
-  --color-error: #ef4444;
-  --color-warning: #f59e0b;
-  --color-border: #e2e8f0;
-  --color-mic-active: #ef4444;
-  --color-mic-inactive: #10b981;
+  --color-background: #faf6f0;
+  --color-surface: #f5f0e8;
+  --color-text-primary: #2d2a26;
+  --color-text-secondary: #6b5e4f;
+  --color-primary: #D4A017;
+  --color-primary-hover: #b8890f;
+  --color-user-bubble: #D4A017;
+  --color-agent-bubble: #ede8df;
+  --color-success: #2E8B57;
+  --color-error: #E74C3C;
+  --color-warning: #C84B31;
+  --color-border: #d4ccc0;
+  --color-mic-active: #E74C3C;
+  --color-mic-inactive: #2E8B57;
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
@@ -40,18 +40,18 @@
 }
 
 [data-theme='dark'] {
-  --color-background: #0f172a;
-  --color-surface: #1e293b;
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #cbd5e1;
-  --color-primary: #818cf8;
-  --color-primary-hover: #6366f1;
-  --color-user-bubble: #4f46e5;
-  --color-agent-bubble: #334155;
-  --color-success: #34d399;
-  --color-error: #f87171;
-  --color-warning: #fbbf24;
-  --color-border: #334155;
-  --color-mic-active: #dc2626;
-  --color-mic-inactive: #059669;
+  --color-background: #1a1a2e;
+  --color-surface: #242444;
+  --color-text-primary: #F5F0E8;
+  --color-text-secondary: #b8b0a4;
+  --color-primary: #D4A017;
+  --color-primary-hover: #e6b31e;
+  --color-user-bubble: #b8890f;
+  --color-agent-bubble: #2d2d4a;
+  --color-success: #3cb371;
+  --color-error: #E74C3C;
+  --color-warning: #C84B31;
+  --color-border: #3d3d5c;
+  --color-mic-active: #E74C3C;
+  --color-mic-inactive: #2E8B57;
 }

@@ -20,7 +20,7 @@ export function Header() {
       <div className="flex items-center gap-2">
         <img src="/logo.svg" alt="" className="w-6 h-6" />
         <h1 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-          Intent Capture
+          INCA
         </h1>
       </div>
       <div className="flex items-center gap-3">
