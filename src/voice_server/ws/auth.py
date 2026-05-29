@@ -44,3 +44,15 @@ def extract_user_id(websocket: WebSocket) -> str | None:
         return None
 
     return user_id
+
+
+def extract_user_email(websocket: WebSocket) -> str:
+    settings = get_settings()
+    if settings.local_mode:
+        return "dev@localhost"
+    protocols = websocket.headers.get("sec-websocket-protocol", "")
+    parts = [p.strip() for p in protocols.split(",")]
+    for part in parts:
+        if "@" in part and "." in part:
+            return part
+    return ""

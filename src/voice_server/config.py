@@ -47,6 +47,13 @@ class Settings:
     slack_enabled: bool = field(
         default_factory=lambda: os.environ.get("SLACK_ENABLED", "true").lower() == "true"
     )
+    slack_bot_token: str = field(default_factory=lambda: os.environ.get("SLACK_BOT_TOKEN", ""))
+    slack_signing_secret: str = field(
+        default_factory=lambda: os.environ.get("SLACK_SIGNING_SECRET", "")
+    )
+    history_summarise_threshold: int = field(
+        default_factory=lambda: int(os.environ.get("HISTORY_SUMMARISE_THRESHOLD", "30"))
+    )
 
 
 def get_settings() -> Settings:

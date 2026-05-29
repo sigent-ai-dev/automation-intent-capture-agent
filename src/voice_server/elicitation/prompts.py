@@ -28,9 +28,12 @@ Intent ID: {intent_id}
 Project: {project_name}
 Populated sections: {populated}
 Missing sections: {missing}
+Channels that contributed: {channels}
 
 Continue the conversation by acknowledging existing progress and guiding toward remaining gaps. \
-Don't re-ask questions that have already been answered.
+Don't re-ask questions that have already been answered. Reference specific details from the \
+conversation history below if available.
+{history_context}
 """
 
 
@@ -44,10 +47,12 @@ def build_system_prompt(base_prompt: str | None = None, resume_context: str | No
     return "\n\n".join(parts)
 
 
-def build_resume_context(doc) -> str:
+def build_resume_context(doc, channels: str = "voice", history_context: str = "") -> str:
     return RESUME_PROMPT_TEMPLATE.format(
         intent_id=doc.intent_id,
         project_name=doc.project_name,
         populated=", ".join(doc.populated_sections()) or "none",
         missing=", ".join(doc.empty_sections()) or "none",
+        channels=channels,
+        history_context=history_context,
     )

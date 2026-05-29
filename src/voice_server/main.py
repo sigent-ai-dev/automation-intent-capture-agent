@@ -64,6 +64,11 @@ async def lifespan(app: FastAPI):
 
         register_adapter(SlackNotificationAdapter())
         logger.info("slack_notifications_enabled")
+    if settings.slack_bot_token:
+        from voice_server.channels.slack.app import create_slack_app
+
+        create_slack_app()
+        logger.info("slack_bot_registered")
     start_cleanup_task()
     logger.info("server_starting", port=settings.port, local_mode=settings.local_mode)
     yield
@@ -87,8 +92,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from voice_server.channels.endpoints import router as channels_router  # noqa: E402
+
 app.include_router(health_router)
 app.include_router(capture_router)
+app.include_router(channels_router)
+
+
+@app.post("/slack/events")
+async def slack_events(request):
+    from voice_server.channels.slack.app import get_slack_handler
+
+    handler = get_slack_handler()
+    if handler is None:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse({"error": "Slack bot not configured"}, status_code=503)
+    return await handler.handle(request)
 
 
 @app.websocket("/ws/audio")

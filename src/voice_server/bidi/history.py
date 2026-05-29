@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 class Turn:
     role: str
     text: str
+    channel: str = "voice"
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -29,8 +30,8 @@ class ConversationHistory:
         self.summary: str = ""
         self._persistence = persistence
 
-    def add_turn(self, role: str, text: str) -> None:
-        self.turns.append(Turn(role=role, text=text))
+    def add_turn(self, role: str, text: str, channel: str = "voice") -> None:
+        self.turns.append(Turn(role=role, text=text, channel=channel))
         if len(self.turns) > self.window_size:
             self._summarise_overflow()
         if self._persistence:
