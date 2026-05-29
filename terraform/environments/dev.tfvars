@@ -1,7 +1,7 @@
-aws_region    = "eu-west-1"
-environment   = "dev"
-project_name  = "intent-capture"
-image_tag     = "latest"
+aws_region   = "eu-west-1"
+environment  = "dev"
+project_name = "intent-capture"
+image_tag    = "latest"
 
 # Cognito (already provisioned)
 cognito_callback_urls = ["http://localhost:5174", "https://intent-capture-dev.example.com"]

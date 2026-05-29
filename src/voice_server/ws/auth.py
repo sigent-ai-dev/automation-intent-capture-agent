@@ -10,10 +10,8 @@ EXPECTED_PROTOCOL = "v1.audio.intent"
 
 def validate_token_sync(token: str) -> str | None:
     try:
-        from jose import jwt, JWTError
-        from voice_server.auth.config import get_auth_config
+        from jose import jwt
 
-        config = get_auth_config()
         unverified_claims = jwt.get_unverified_claims(token)
         return unverified_claims.get("sub")
     except Exception:
