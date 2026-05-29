@@ -92,27 +92,27 @@ resource "aws_iam_role_policy" "deploy" {
       {
         Effect = "Allow"
         Action = [
-          "ec2:Describe*",
-          "elasticloadbalancing:Describe*",
-          "ecs:Describe*",
-          "ecs:List*",
-          "ecr:Describe*",
-          "ecr:List*",
+          "ec2:*",
+          "elasticloadbalancing:*",
+          "ecs:*",
+          "ecr:*",
           "iam:Get*",
           "iam:List*",
-          "logs:Describe*",
-          "logs:List*",
-          "dynamodb:Describe*",
-          "dynamodb:List*",
-          "application-autoscaling:Describe*",
-          "cloudwatch:Describe*",
-          "cloudwatch:Get*",
-          "cloudwatch:List*",
-          "cognito-idp:Describe*",
-          "cognito-idp:List*",
-          "cognito-idp:Get*",
-          "acm:Describe*",
-          "acm:List*"
+          "iam:CreateRole",
+          "iam:DeleteRole",
+          "iam:PutRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:TagRole",
+          "iam:UntagRole",
+          "iam:CreateServiceLinkedRole",
+          "logs:*",
+          "dynamodb:*",
+          "application-autoscaling:*",
+          "cloudwatch:*",
+          "cognito-idp:*",
+          "acm:*"
         ]
         Resource = "*"
       }
