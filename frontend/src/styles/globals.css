@@ -16,6 +16,24 @@ body {
   transition: background-color 0.2s, color 0.2s;
 }
 
+[data-theme='dark'] body::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 255, 127, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme='dark'] #root {
+  position: relative;
+  z-index: 1;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }
