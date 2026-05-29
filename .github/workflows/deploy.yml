@@ -106,11 +106,30 @@ jobs:
           aws_region: ${{ env.AWS_REGION }}
           terraform_version: ""
 
+      - name: Get current task definition
+        id: task-def
+        run: |
+          TASK_DEF=$(aws ecs describe-services --cluster $ECS_CLUSTER --services $ECS_SERVICE --query 'services[0].taskDefinition' --output text)
+          echo "arn=$TASK_DEF" >> "$GITHUB_OUTPUT"
+
+      - name: Register new task definition with image tag
+        id: new-task-def
+        env:
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+        run: |
+          TASK_DEF_JSON=$(aws ecs describe-task-definition --task-definition ${{ steps.task-def.outputs.arn }} --query 'taskDefinition')
+          REGISTRY=$(echo $TASK_DEF_JSON | jq -r '.containerDefinitions[0].image' | cut -d: -f1)
+          NEW_IMAGE="$REGISTRY:$IMAGE_TAG"
+          NEW_DEF=$(echo $TASK_DEF_JSON | jq --arg img "$NEW_IMAGE" '.containerDefinitions[0].image = $img | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+          NEW_ARN=$(echo $NEW_DEF | aws ecs register-task-definition --cli-input-json file:///dev/stdin --query 'taskDefinition.taskDefinitionArn' --output text)
+          echo "arn=$NEW_ARN" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
+            --task-definition ${{ steps.new-task-def.outputs.arn }} \
             --force-new-deployment
 
       - name: Wait for deployment
