@@ -61,6 +61,8 @@ async def websocket_audio_endpoint(websocket: WebSocket) -> None:
             bridge = AudioBridge(session_id=session.id, ws=websocket)
             await bridge.start()
             logger.info("audio_bridge_started", session_id=session.id)
+        else:
+            logger.warning("voice_disabled_local_mode", session_id=session.id)
 
         await _stream_loop(websocket, session, bridge)
     except WebSocketDisconnect:
