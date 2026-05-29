@@ -25,9 +25,7 @@ class TestExtractUserIdFromProtocol:
                 mock_validate.return_value = "user-123"
                 result = extract_user_id(mock_websocket)
                 assert result == "user-123"
-                mock_validate.assert_called_once_with(
-                    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.test"
-                )
+                mock_validate.assert_called_once_with("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.test")
 
     def test_returns_none_when_no_protocol_header(self, mock_websocket):
         mock_websocket.headers = {}
@@ -57,9 +55,7 @@ class TestExtractUserIdFromProtocol:
             assert result == "local-dev-user"
 
     def test_returns_none_when_token_validation_fails(self, mock_websocket):
-        mock_websocket.headers = {
-            "sec-websocket-protocol": "v1.audio.intent, invalid-token"
-        }
+        mock_websocket.headers = {"sec-websocket-protocol": "v1.audio.intent, invalid-token"}
         with patch("voice_server.ws.auth.get_settings") as mock_settings:
             mock_settings.return_value = MagicMock(local_mode=False)
             with patch("voice_server.ws.auth.validate_token_sync") as mock_validate:
