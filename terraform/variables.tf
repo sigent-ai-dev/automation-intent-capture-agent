@@ -27,21 +27,6 @@ variable "certificate_arn" {
   description = "ACM certificate ARN for HTTPS on the ALB"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID where the service will run"
-}
-
-variable "public_subnet_ids" {
-  type        = list(string)
-  description = "Public subnet IDs for the ALB"
-}
-
-variable "private_subnet_ids" {
-  type        = list(string)
-  description = "Private subnet IDs for ECS tasks"
-}
-
 variable "cognito_callback_urls" {
   type        = list(string)
   description = "Allowed callback URLs for Cognito SPA client"

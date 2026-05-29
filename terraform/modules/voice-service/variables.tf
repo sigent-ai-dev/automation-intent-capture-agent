@@ -67,6 +67,12 @@ variable "health_check_path" {
   default = "/health/live"
 }
 
+variable "cognito_user_pool_id" {
+  type        = string
+  description = "Cognito user pool ID for JWT validation"
+  default     = ""
+}
+
 variable "websocket_idle_timeout" {
   type        = number
   default     = 1800

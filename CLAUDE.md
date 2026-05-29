@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/006-vite6-cognito-auth/plan.md
+at specs/011-deploy-voice-infra/plan.md
 <!-- SPECKIT END -->
 
 ## Project Context

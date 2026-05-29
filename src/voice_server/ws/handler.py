@@ -35,7 +35,7 @@ async def websocket_audio_endpoint(websocket: WebSocket) -> None:
         await websocket.close(code=4001, reason="Unauthorized")
         return
 
-    await websocket.accept()
+    await websocket.accept(subprotocol="v1.audio.intent")
 
     session = Session(user_id=user_id)
     registry.create(session)
