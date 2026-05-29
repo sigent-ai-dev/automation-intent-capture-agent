@@ -20,8 +20,8 @@
 
 **Purpose**: Create package structure, add config, add httpx dependency
 
-- [ ] T001 Create package structure: src/voice_server/notifications/__init__.py
-- [ ] T002 [P] Add Slack config variables to src/voice_server/config.py (SLACK_WEBHOOK_URL, SLACK_CHANNEL, SLACK_ENABLED)
+- [x] T001 Create package structure: src/voice_server/notifications/__init__.py
+- [x] T002 [P] Add Slack config variables to src/voice_server/config.py (SLACK_WEBHOOK_URL, SLACK_CHANNEL, SLACK_ENABLED)
 - [ ] T003 [P] Add respx to dev dependencies in pyproject.toml and run uv lock
 
 ---
@@ -30,9 +30,9 @@
 
 **Purpose**: Event types, rate limiter, and notification dispatcher
 
-- [ ] T004 [P] Define notification event types (IntentFinalised, ErrorOccurred) in src/voice_server/notifications/events.py
-- [ ] T005 [P] Implement in-memory rate limiter (token bucket per event type, 1/min) in src/voice_server/notifications/rate_limiter.py
-- [ ] T006 Implement notification dispatcher (register adapters, dispatch async, no-op when empty) in src/voice_server/notifications/__init__.py
+- [x] T004 [P] Define notification event types (IntentFinalised, ErrorOccurred) in src/voice_server/notifications/events.py
+- [x] T005 [P] Implement in-memory rate limiter (token bucket per event type, 1/min) in src/voice_server/notifications/rate_limiter.py
+- [x] T006 Implement notification dispatcher (register adapters, dispatch async, no-op when empty) in src/voice_server/notifications/__init__.py
 
 **Checkpoint**: Event types defined, rate limiter working, dispatcher dispatches to registered adapters
 
@@ -46,14 +46,14 @@
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Unit test for Slack message formatting (intent notification, short doc inline, long doc summary only) in tests/unit/test_slack_notifications.py
-- [ ] T008 [P] [US1] Unit test for rate limiter (allow first, block within window, allow after window) in tests/unit/test_rate_limiter.py
+- [x] T007 [P] [US1] Unit test for Slack message formatting (intent notification, short doc inline, long doc summary only) in tests/unit/test_slack_notifications.py
+- [x] T008 [P] [US1] Unit test for rate limiter (allow first, block within window, allow after window) in tests/unit/test_rate_limiter.py
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Implement Slack webhook client (async POST with httpx, format intent notification as Block Kit) in src/voice_server/notifications/slack.py
-- [ ] T010 [US1] Emit IntentFinalised event from finalise_intent tool after successful finalisation in src/voice_server/elicitation/tools.py
-- [ ] T011 [US1] Register Slack adapter on application startup (if configured) in src/voice_server/main.py
+- [x] T009 [US1] Implement Slack webhook client (async POST with httpx, format intent notification as Block Kit) in src/voice_server/notifications/slack.py
+- [x] T010 [US1] Emit IntentFinalised event from finalise_intent tool after successful finalisation in src/voice_server/elicitation/tools.py
+- [x] T011 [US1] Register Slack adapter on application startup (if configured) in src/voice_server/main.py
 
 **Checkpoint**: Finalising an intent triggers a Slack message
 
@@ -67,9 +67,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Implement error notification formatting (Block Kit with warning emoji, session context) in src/voice_server/notifications/slack.py
-- [ ] T013 [US2] Emit ErrorOccurred event from AudioBridge._handle_agent_error when all retries exhausted in src/voice_server/bidi/agent.py
-- [ ] T014 [US2] Wire rate limiter into Slack adapter — check before sending, skip if rate-limited in src/voice_server/notifications/slack.py
+- [x] T012 [US2] Implement error notification formatting (Block Kit with warning emoji, session context) in src/voice_server/notifications/slack.py
+- [x] T013 [US2] Emit ErrorOccurred event from AudioBridge._handle_agent_error when all retries exhausted in src/voice_server/bidi/agent.py
+- [x] T014 [US2] Wire rate limiter into Slack adapter — check before sending, skip if rate-limited in src/voice_server/notifications/slack.py
 
 **Checkpoint**: Errors trigger rate-limited Slack alerts
 
@@ -81,8 +81,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Implement graceful no-op when webhook URL is empty — adapter skips silently in src/voice_server/notifications/slack.py
-- [ ] T016 [US3] Log delivery failures as warnings without raising exceptions in src/voice_server/notifications/slack.py
+- [x] T015 [US3] Implement graceful no-op when webhook URL is empty — adapter skips silently in src/voice_server/notifications/slack.py
+- [x] T016 [US3] Log delivery failures as warnings without raising exceptions in src/voice_server/notifications/slack.py
 
 **Checkpoint**: System works identically with or without notifications configured
 
@@ -92,8 +92,8 @@
 
 **Purpose**: Observability and validation
 
-- [ ] T017 [P] Add metrics for notifications (sent count, delivery failures, rate-limited drops) in src/voice_server/observability/metrics.py
-- [ ] T018 Run quickstart.md validation — verify notification flow end-to-end
+- [x] T017 [P] Add metrics for notifications (sent count, delivery failures, rate-limited drops) in src/voice_server/observability/metrics.py
+- [x] T018 Run quickstart.md validation — verify notification flow end-to-end
 
 ---
 
