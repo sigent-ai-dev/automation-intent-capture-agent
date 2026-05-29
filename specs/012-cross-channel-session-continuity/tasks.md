@@ -20,12 +20,12 @@
 
 **Purpose**: Add new dependencies, create package structure, extend DynamoDB schema
 
-- [ ] T001 Add slack-bolt dependency to pyproject.toml and run uv lock
-- [ ] T002 [P] Create channel adapter package structure: src/voice_server/channels/__init__.py, src/voice_server/channels/base.py
-- [ ] T003 [P] Create Slack adapter package: src/voice_server/channels/slack/__init__.py
-- [ ] T004 [P] Create Claude adapter package: src/voice_server/channels/claude/__init__.py
-- [ ] T005 [P] Add new config variables to src/voice_server/config.py (SLACK_BOT_TOKEN, SLACK_SIGNING_SECRET, HISTORY_SUMMARISE_THRESHOLD)
-- [ ] T006 Add user_email GSI to terraform/modules/voice-service/dynamodb.tf (attribute definition + global_secondary_index block)
+- [x] T001 Add slack-bolt dependency to pyproject.toml and run uv lock
+- [x] T002 [P] Create channel adapter package structure: src/voice_server/channels/__init__.py, src/voice_server/channels/base.py
+- [x] T003 [P] Create Slack adapter package: src/voice_server/channels/slack/__init__.py
+- [x] T004 [P] Create Claude adapter package: src/voice_server/channels/claude/__init__.py
+- [x] T005 [P] Add new config variables to src/voice_server/config.py (SLACK_BOT_TOKEN, SLACK_SIGNING_SECRET, HISTORY_SUMMARISE_THRESHOLD)
+- [x] T006 Add user_email GSI to terraform/modules/voice-service/dynamodb.tf (attribute definition + global_secondary_index block)
 
 ---
 
@@ -33,14 +33,14 @@
 
 **Purpose**: Intent-keyed persistence adapters, user lookup, and shared session model that ALL user stories depend on
 
-- [ ] T007 [P] Implement IntentSession dataclass in src/voice_server/sessions/intent_session.py (intent_id, user_email, status, active_channels, section_attributions, version)
-- [ ] T008 [P] Implement IntentSessionAdapter (save/load/query by user_email via GSI) in src/voice_server/persistence/intent_session_adapter.py
-- [ ] T009 [P] Implement IntentHistoryAdapter (save/load history keyed by intent_id, turns with channel annotation) in src/voice_server/persistence/intent_history_adapter.py
-- [ ] T010 Implement user_lookup module (query GSI for active intents by email, return sorted list) in src/voice_server/sessions/user_lookup.py
-- [ ] T011 [P] Add query_gsi_by_email function to src/voice_server/persistence/client.py (query user-email-index with KeyConditionExpression on user_email)
-- [ ] T012 [P] Extend ConversationHistory.add_turn() to accept channel parameter in src/voice_server/bidi/history.py
-- [ ] T013 Implement ChannelAdapter protocol and adapter registry in src/voice_server/channels/base.py (protocol with resolve_identity, handle_message methods)
-- [ ] T014 Add intent lookup REST endpoints (GET /intents/active, POST /intents/{intent_id}/resume, POST /intents/{intent_id}/message) in src/voice_server/channels/endpoints.py
+- [x] T007 [P] Implement IntentSession dataclass in src/voice_server/sessions/intent_session.py (intent_id, user_email, status, active_channels, section_attributions, version)
+- [x] T008 [P] Implement IntentSessionAdapter (save/load/query by user_email via GSI) in src/voice_server/persistence/intent_session_adapter.py
+- [x] T009 [P] Implement IntentHistoryAdapter (save/load history keyed by intent_id, turns with channel annotation) in src/voice_server/persistence/intent_history_adapter.py
+- [x] T010 Implement user_lookup module (query GSI for active intents by email, return sorted list) in src/voice_server/sessions/user_lookup.py
+- [x] T011 [P] Add query_gsi_by_email function to src/voice_server/persistence/client.py (query user-email-index with KeyConditionExpression on user_email)
+- [x] T012 [P] Extend ConversationHistory.add_turn() to accept channel parameter in src/voice_server/bidi/history.py
+- [x] T013 Implement ChannelAdapter protocol and adapter registry in src/voice_server/channels/base.py (protocol with resolve_identity, handle_message methods)
+- [x] T014 Add intent lookup REST endpoints (GET /intents/active, POST /intents/{intent_id}/resume, POST /intents/{intent_id}/message) in src/voice_server/channels/endpoints.py
 
 **Checkpoint**: Shared session layer complete — intent-keyed persistence, user lookup, and channel adapter protocol ready
 
@@ -54,14 +54,14 @@
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] Unit test for user_lookup — single intent, multiple intents, no intents cases in tests/unit/test_user_lookup.py
-- [ ] T016 [P] [US2] Unit test for IntentSessionAdapter — save, load, query_by_email in tests/unit/test_intent_session.py
+- [x] T015 [P] [US2] Unit test for user_lookup — single intent, multiple intents, no intents cases in tests/unit/test_user_lookup.py
+- [x] T016 [P] [US2] Unit test for IntentSessionAdapter — save, load, query_by_email in tests/unit/test_intent_session.py
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Wire user_lookup into GET /intents/active endpoint — resolve email from query param, query GSI, return intent list in src/voice_server/channels/endpoints.py
-- [ ] T018 [US2] Update voice adapter to create IntentSession record when create_intent tool is called in src/voice_server/elicitation/tools.py (write intent_id + user_email + status to DynamoDB)
-- [ ] T019 [US2] Extract user_email from Cognito token in voice session and pass through to elicitation tools in src/voice_server/ws/auth.py
+- [x] T017 [US2] Wire user_lookup into GET /intents/active endpoint — resolve email from query param, query GSI, return intent list in src/voice_server/channels/endpoints.py
+- [x] T018 [US2] Update voice adapter to create IntentSession record when create_intent tool is called in src/voice_server/elicitation/tools.py (write intent_id + user_email + status to DynamoDB)
+- [x] T019 [US2] Extract user_email from Cognito token in voice session and pass through to elicitation tools in src/voice_server/ws/auth.py
 
 **Checkpoint**: Channel adapters can discover active intents by email — foundation for cross-channel resume
 
@@ -78,12 +78,13 @@
 - [ ] T020 [P] [US1] Unit test for resume flow — load intent session, build resume context, verify agent response includes progress in tests/unit/test_cross_channel_resume.py
 - [ ] T021 [P] [US1] Integration test for voice→Slack resume (mock DynamoDB, verify full flow) in tests/integration/test_cross_channel_resume.py
 
+
 ### Implementation for User Story 1
 
-- [ ] T022 [US1] Implement resume logic in POST /intents/{intent_id}/resume — load IntentSession, verify user, load history, build resume prompt, invoke elicitation agent in src/voice_server/channels/endpoints.py
-- [ ] T023 [US1] Enhance build_resume_context() to include conversation history summary and channel sources in src/voice_server/elicitation/prompts.py
-- [ ] T024 [US1] Implement message relay in POST /intents/{intent_id}/message — add turn to history, invoke agent, return response in src/voice_server/channels/endpoints.py
-- [ ] T025 [US1] Update elicitation tools to accept channel parameter and record it on section updates in src/voice_server/elicitation/tools.py
+- [x] T022 [US1] Implement resume logic in POST /intents/{intent_id}/resume — load IntentSession, verify user, load history, build resume prompt, invoke elicitation agent in src/voice_server/channels/endpoints.py
+- [x] T023 [US1] Enhance build_resume_context() to include conversation history summary and channel sources in src/voice_server/elicitation/prompts.py
+- [x] T024 [US1] Implement message relay in POST /intents/{intent_id}/message — add turn to history, invoke agent, return response in src/voice_server/channels/endpoints.py
+- [x] T025 [US1] Update elicitation tools to accept channel parameter and record it on section updates in src/voice_server/elicitation/tools.py
 
 **Checkpoint**: Cross-channel resume works end-to-end — core value proposition delivered
 
@@ -97,14 +98,14 @@
 
 ### Tests for User Story 3
 
-- [ ] T026 [P] [US3] Unit test for IntentHistoryAdapter — save/load turns with channel field, verify ordering in tests/unit/test_intent_history.py
-- [ ] T027 [P] [US3] Unit test for history summarisation at 30-turn threshold in tests/unit/test_intent_history.py
+- [x] T026 [P] [US3] Unit test for IntentHistoryAdapter — save/load turns with channel field, verify ordering in tests/unit/test_intent_history.py
+- [x] T027 [P] [US3] Unit test for history summarisation at 30-turn threshold in tests/unit/test_intent_history.py
 
 ### Implementation for User Story 3
 
-- [ ] T028 [US3] Implement 30-turn summarisation in IntentHistoryAdapter — when turn_count > 30, summarise oldest turns via elicitation agent's model; fallback to simple concatenation if LLM call fails in src/voice_server/persistence/intent_history_adapter.py
+- [x] T028 [US3] Implement 30-turn summarisation in IntentHistoryAdapter — when turn_count > 30, summarise oldest turns via elicitation agent's model; fallback to simple concatenation if LLM call fails in src/voice_server/persistence/intent_history_adapter.py
 - [ ] T029 [US3] Update voice adapter to write turns to intent-keyed history (in addition to session-keyed for backward compat) in src/voice_server/bidi/agent.py
-- [ ] T030 [US3] Ensure resume endpoint loads intent-keyed history and injects into agent context in src/voice_server/channels/endpoints.py
+- [x] T030 [US3] Ensure resume endpoint loads intent-keyed history and injects into agent context in src/voice_server/channels/endpoints.py
 
 **Checkpoint**: Full conversation context carries across channels with summarisation
 
@@ -118,9 +119,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T031 [P] [US4] Add ChannelContribution dataclass (channel, timestamp) to src/voice_server/sessions/intent_session.py
-- [ ] T032 [US4] Record channel attribution in IntentSession.section_attributions when update_intent_section is called in src/voice_server/elicitation/tools.py
-- [ ] T033 [US4] Expose channel attributions in GET /intents/active and status responses in src/voice_server/channels/endpoints.py
+- [x] T031 [P] [US4] Add ChannelContribution dataclass (channel, timestamp) to src/voice_server/sessions/intent_session.py
+- [x] T032 [US4] Record channel attribution in IntentSession.section_attributions when update_intent_section is called in src/voice_server/elicitation/tools.py
+- [x] T033 [US4] Expose channel attributions in GET /intents/active and status responses in src/voice_server/channels/endpoints.py
 
 **Checkpoint**: Audit trail shows which channel populated each section
 
@@ -134,16 +135,16 @@
 
 ### Tests for Slack Adapter
 
-- [ ] T034 [P] Unit test for Slack identity resolution (users.info → email extraction) in tests/unit/test_slack_adapter.py
+- [x] T034 [P] Unit test for Slack identity resolution (users.info → email extraction) in tests/unit/test_slack_adapter.py
 - [ ] T035 [P] Unit test for Slack event routing (app_mention → resume, message.im → message) in tests/unit/test_slack_adapter.py
 
 ### Implementation for Slack Adapter
 
-- [ ] T036 Implement Slack Bolt app with event handlers (app_mention, message.im) in src/voice_server/channels/slack/app.py
-- [ ] T037 Implement Slack identity resolution (user ID → email via users.info) in src/voice_server/channels/slack/identity.py
-- [ ] T038 Implement Slack elicitation bridge (route events to resume/message endpoints, format responses as Block Kit, reply in thread, handle multi-draft selection prompt) in src/voice_server/channels/slack/elicitation.py
-- [ ] T039 Register Slack adapter on startup (if SLACK_BOT_TOKEN configured) in src/voice_server/main.py
-- [ ] T040 Mount Slack event handler route at /slack/events in src/voice_server/main.py
+- [x] T036 Implement Slack Bolt app with event handlers (app_mention, message.im) in src/voice_server/channels/slack/app.py
+- [x] T037 Implement Slack identity resolution (user ID → email via users.info) in src/voice_server/channels/slack/identity.py
+- [x] T038 Implement Slack elicitation bridge (route events to resume/message endpoints, format responses as Block Kit, reply in thread, handle multi-draft selection prompt) in src/voice_server/channels/slack/elicitation.py
+- [x] T039 Register Slack adapter on startup (if SLACK_BOT_TOKEN configured) in src/voice_server/main.py
+- [x] T040 Mount Slack event handler route at /slack/events in src/voice_server/main.py
 
 **Checkpoint**: Slack bot conducts full elicitation sessions in threads
 
@@ -157,12 +158,12 @@
 
 ### Tests for Claude Adapter
 
-- [ ] T041 [P] Unit test for Claude skill — list, start, resume, message, status actions in tests/unit/test_claude_adapter.py
+- [x] T041 [P] Unit test for Claude skill — list, start, resume, message, status actions in tests/unit/test_claude_adapter.py
 
 ### Implementation for Claude Adapter
 
-- [ ] T042 Implement Claude MCP tool (intent_capture) with action routing (including multi-draft selection on resume, warn if active draft exists on start) in src/voice_server/channels/claude/skill.py
-- [ ] T043 Implement identity resolution for Claude (CLI: git config email, web: Cognito session, explicit --user-email overrides both) in src/voice_server/channels/claude/skill.py
+- [x] T042 Implement Claude MCP tool (intent_capture) with action routing (including multi-draft selection on resume, warn if active draft exists on start) in src/voice_server/channels/claude/skill.py
+- [x] T043 Implement identity resolution for Claude (CLI: git config email, web: Cognito session, explicit --user-email overrides both) in src/voice_server/channels/claude/skill.py
 
 **Checkpoint**: Claude can drive full elicitation sessions via MCP tool
 

@@ -75,6 +75,23 @@ async def query_by_pk(session_id: str, consistent: bool = True) -> list[dict[str
         return []
 
 
+async def query_gsi_by_email(user_email: str) -> list[dict[str, Any]]:
+    settings = get_settings()
+    try:
+        async with await get_dynamo_client() as client:
+            response = await client.query(
+                TableName=settings.dynamo_table_name,
+                IndexName="user-email-index",
+                KeyConditionExpression="user_email = :email",
+                ExpressionAttributeValues={":email": {"S": user_email}},
+                ScanIndexForward=False,
+            )
+        return response.get("Items", [])
+    except Exception as e:
+        logger.warning("dynamo_gsi_email_query_failed", error=str(e))
+        return []
+
+
 async def query_gsi(index_name: str, pk_value: str) -> list[dict[str, Any]]:
     settings = get_settings()
     try:

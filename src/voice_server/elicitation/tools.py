@@ -67,6 +67,27 @@ def create_intent(project_name: str, context: str, intent: str, motivation: str)
             }
 
     logger.info("intent_created", intent_id=intent_id, project=project_name)
+
+    import asyncio
+
+    from voice_server.persistence.intent_session_adapter import IntentSessionAdapter
+    from voice_server.sessions.intent_session import IntentSession
+
+    try:
+        loop = asyncio.get_running_loop()
+        session = IntentSession(
+            intent_id=intent_id,
+            user_email=_get_current_user_email(),
+            project_name=project_name,
+            active_channels={_get_current_channel()},
+        )
+        session.record_section_update("context", _get_current_channel())
+        session.record_section_update("intent", _get_current_channel())
+        session.record_section_update("motivation", _get_current_channel())
+        loop.create_task(IntentSessionAdapter().save(session))
+    except RuntimeError:
+        pass
+
     return {
         "status": "success",
         "content": [{"text": f"Created {intent_id} for '{project_name}'"}],
@@ -118,6 +139,25 @@ def update_intent_section(intent_id: str, section: str, content: str, append: bo
             return {"status": "error", "content": [{"text": f"Failed to save: {e}"}]}
 
     logger.info("intent_section_updated", intent_id=intent_id, section=section)
+
+    import asyncio
+
+    from voice_server.persistence.intent_session_adapter import IntentSessionAdapter
+
+    try:
+        loop = asyncio.get_running_loop()
+
+        async def _record_attribution():
+            adapter = IntentSessionAdapter()
+            session = await adapter.load(intent_id)
+            if session:
+                session.record_section_update(section, _get_current_channel())
+                await adapter.save(session)
+
+        loop.create_task(_record_attribution())
+    except RuntimeError:
+        pass
+
     return {
         "status": "success",
         "content": [{"text": f"Updated {section} section of {intent_id}"}],
@@ -283,3 +323,26 @@ def _next_clr_id(items: list[str]) -> str:
         if m:
             max_num = max(max_num, int(m.group(1)))
     return f"CLR-{max_num + 1:03d}"
+
+
+import contextvars
+
+_current_channel: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "_current_channel", default="voice"
+)
+_current_user_email: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "_current_user_email", default=""
+)
+
+
+def set_elicitation_context(channel: str, user_email: str) -> None:
+    _current_channel.set(channel)
+    _current_user_email.set(user_email)
+
+
+def _get_current_channel() -> str:
+    return _current_channel.get()
+
+
+def _get_current_user_email() -> str:
+    return _current_user_email.get()
