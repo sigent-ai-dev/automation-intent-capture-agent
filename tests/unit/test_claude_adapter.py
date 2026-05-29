@@ -4,7 +4,9 @@ from voice_server.channels.claude.skill import intent_capture, _resolve_claude_i
 
 
 async def test_list_returns_empty_when_no_intents():
-    with patch("voice_server.channels.claude.skill.get_intent_summaries", new_callable=AsyncMock) as mock:
+    with patch(
+        "voice_server.channels.claude.skill.get_intent_summaries", new_callable=AsyncMock
+    ) as mock:
         mock.return_value = []
         result = await intent_capture(action="list", user_email="alice@example.com")
         assert result["intents"] == []
@@ -21,7 +23,9 @@ async def test_list_returns_intents():
         last_channel="voice",
         last_activity="2026-05-29T12:00:00",
     )
-    with patch("voice_server.channels.claude.skill.get_intent_summaries", new_callable=AsyncMock) as mock:
+    with patch(
+        "voice_server.channels.claude.skill.get_intent_summaries", new_callable=AsyncMock
+    ) as mock:
         mock.return_value = [summary]
         result = await intent_capture(action="list", user_email="alice@example.com")
         assert len(result["intents"]) == 1
@@ -32,7 +36,9 @@ async def test_start_warns_about_existing_drafts():
     from voice_server.sessions.intent_session import IntentSession
 
     session = IntentSession(intent_id="INT-001", user_email="alice@example.com")
-    with patch("voice_server.channels.claude.skill.find_active_intents", new_callable=AsyncMock) as mock:
+    with patch(
+        "voice_server.channels.claude.skill.find_active_intents", new_callable=AsyncMock
+    ) as mock:
         mock.return_value = [session]
         result = await intent_capture(
             action="start", project_name="New Project", user_email="alice@example.com"

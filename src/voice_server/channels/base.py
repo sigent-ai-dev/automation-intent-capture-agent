@@ -13,9 +13,7 @@ class ChannelAdapter(Protocol):
         """Resolve channel-specific context to a canonical email address."""
         ...
 
-    async def handle_message(
-        self, user_email: str, intent_id: str, message: str
-    ) -> dict[str, Any]:
+    async def handle_message(self, user_email: str, intent_id: str, message: str) -> dict[str, Any]:
         """Process an inbound message and return the agent response."""
         ...
 

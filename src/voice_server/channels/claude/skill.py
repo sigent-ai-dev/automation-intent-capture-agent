@@ -21,7 +21,9 @@ async def intent_capture(
 ) -> dict[str, Any]:
     email = user_email or _resolve_claude_identity()
     if not email:
-        return {"error": "Cannot determine user identity. Set git config user.email or pass --user-email."}
+        return {
+            "error": "Cannot determine user identity. Set git config user.email or pass --user-email."
+        }
 
     if action == "list":
         return await _handle_list(email)

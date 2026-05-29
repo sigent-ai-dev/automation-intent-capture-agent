@@ -36,9 +36,7 @@ async def handle_slack_message(client, event: dict, say) -> None:
     if len(intents) == 1:
         session = intents[0]
     else:
-        options = "\n".join(
-            f"• `{s.intent_id}` — {s.project_name}" for s in intents
-        )
+        options = "\n".join(f"• `{s.intent_id}` — {s.project_name}" for s in intents)
         await say(
             text=f"You have multiple active intents:\n{options}\n\nWhich one would you like to continue? Reply with the ID.",
             thread_ts=thread_ts,

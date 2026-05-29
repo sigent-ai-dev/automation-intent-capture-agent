@@ -5,9 +5,7 @@ from voice_server.channels.slack.identity import resolve_email_from_slack
 
 async def test_resolve_email_success():
     client = AsyncMock()
-    client.users_info.return_value = {
-        "user": {"profile": {"email": "alice@example.com"}}
-    }
+    client.users_info.return_value = {"user": {"profile": {"email": "alice@example.com"}}}
     result = await resolve_email_from_slack(client, "U1234")
     assert result == "alice@example.com"
 

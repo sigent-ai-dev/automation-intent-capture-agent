@@ -41,20 +41,26 @@ async def resume_intent(intent_id: str, request: ResumeRequest):
     session = await session_adapter.load(intent_id)
 
     if session is None:
-        raise HTTPException(status_code=404, detail=f"Intent {intent_id} not found or not in progress")
+        raise HTTPException(
+            status_code=404, detail=f"Intent {intent_id} not found or not in progress"
+        )
 
     if session.user_email != request.user_email:
         raise HTTPException(status_code=403, detail="Intent does not belong to this user")
 
     if not session.is_active():
-        raise HTTPException(status_code=404, detail=f"Intent {intent_id} not found or not in progress")
+        raise HTTPException(
+            status_code=404, detail=f"Intent {intent_id} not found or not in progress"
+        )
 
     session.touch(request.channel)
     await session_adapter.save(session)
 
     doc = load_intent(intent_id)
     if doc is None:
-        raise HTTPException(status_code=404, detail=f"Intent document {intent_id} not found on filesystem")
+        raise HTTPException(
+            status_code=404, detail=f"Intent document {intent_id} not found on filesystem"
+        )
 
     history_adapter = IntentHistoryAdapter()
     history = await history_adapter.load(intent_id)
@@ -80,7 +86,9 @@ async def send_message(intent_id: str, request: MessageRequest):
     session = await session_adapter.load(intent_id)
 
     if session is None or not session.is_active():
-        raise HTTPException(status_code=404, detail=f"Intent {intent_id} not found or not in progress")
+        raise HTTPException(
+            status_code=404, detail=f"Intent {intent_id} not found or not in progress"
+        )
 
     if session.user_email != request.user_email:
         raise HTTPException(status_code=403, detail="Intent does not belong to this user")

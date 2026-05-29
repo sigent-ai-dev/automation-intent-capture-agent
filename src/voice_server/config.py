@@ -47,9 +47,7 @@ class Settings:
     slack_enabled: bool = field(
         default_factory=lambda: os.environ.get("SLACK_ENABLED", "true").lower() == "true"
     )
-    slack_bot_token: str = field(
-        default_factory=lambda: os.environ.get("SLACK_BOT_TOKEN", "")
-    )
+    slack_bot_token: str = field(default_factory=lambda: os.environ.get("SLACK_BOT_TOKEN", ""))
     slack_signing_secret: str = field(
         default_factory=lambda: os.environ.get("SLACK_SIGNING_SECRET", "")
     )

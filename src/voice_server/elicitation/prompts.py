@@ -47,9 +47,7 @@ def build_system_prompt(base_prompt: str | None = None, resume_context: str | No
     return "\n\n".join(parts)
 
 
-def build_resume_context(
-    doc, channels: str = "voice", history_context: str = ""
-) -> str:
+def build_resume_context(doc, channels: str = "voice", history_context: str = "") -> str:
     return RESUME_PROMPT_TEMPLATE.format(
         intent_id=doc.intent_id,
         project_name=doc.project_name,
